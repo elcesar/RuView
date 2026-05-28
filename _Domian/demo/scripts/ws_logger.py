@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 
 BASE = os.path.expanduser("~/Documents/RuView/_Domian/demo/data")
-WS_URL = "ws://192.168.0.8:8765/ws/sensing"
+WS_URL = "ws://192.168.0.15:8765/ws/sensing"
 
 os.makedirs(BASE, exist_ok=True)
 
