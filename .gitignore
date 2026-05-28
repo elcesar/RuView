@@ -261,3 +261,4 @@ v2/crates/rvcsi-node/*.node
 v2/crates/rvcsi-node/binding.js
 v2/crates/rvcsi-node/binding.d.ts
 v2/crates/rvcsi-node/npm/
+.DS_Store
