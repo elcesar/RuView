@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 
 BASE = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data"))
-WS_URL = "ws://192.168.0.15:8765/ws/sensing"
+WS_URL = "ws://192.168.0.8:8765/ws/sensing"
 
 os.makedirs(BASE, exist_ok=True)
 
