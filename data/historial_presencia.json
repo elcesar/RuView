@@ -1,0 +1,310 @@
+[
+  {
+    "timestamp": "2026-05-25T22:36:45.119665",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_still",
+      "presence": true,
+      "confidence": 0.4200885823713892
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:46.123825",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "active",
+      "presence": true,
+      "confidence": 0.46887360593239413
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:47.126927",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "absent",
+      "presence": false,
+      "confidence": 0.35605633750658783
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:48.129750",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "absent",
+      "presence": false,
+      "confidence": 0.35605633750658783
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:49.132386",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "absent",
+      "presence": false,
+      "confidence": 0.3666931555466189
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:50.134317",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "absent",
+      "presence": false,
+      "confidence": 0.3666931555466189
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:51.136553",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_still",
+      "presence": true,
+      "confidence": 0.4730193192002379
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:52.137809",
+    "presence": false,
+    "motion": true,
+    "rssi": -84,
+    "classification": "UNKNOWN",
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:52.142920",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_moving",
+      "presence": false,
+      "confidence": 3.2496371269226074
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:53.145830",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "active",
+      "presence": true,
+      "confidence": 0.36750284001863476
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:54.149617",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "active",
+      "presence": true,
+      "confidence": 0.36750284001863476
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:55.152474",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_still",
+      "presence": true,
+      "confidence": 0.37566391083313444
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:56.155769",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_moving",
+      "presence": true,
+      "confidence": 0.3963221871203838
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:57.158615",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_moving",
+      "presence": true,
+      "confidence": 0.3963221871203838
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:58.164153",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_still",
+      "presence": true,
+      "confidence": 0.5590361008467634
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:36:59.167277",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "active",
+      "presence": true,
+      "confidence": 0.39723759560051547
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:37:00.170648",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "active",
+      "presence": true,
+      "confidence": 0.39723759560051547
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:37:01.173408",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_still",
+      "presence": true,
+      "confidence": 0.6176724413744987
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:37:02.176811",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_still",
+      "presence": true,
+      "confidence": 0.6176724413744987
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:37:03.182969",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_moving",
+      "presence": true,
+      "confidence": 0.3599405584865487
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:37:04.186939",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_moving",
+      "presence": true,
+      "confidence": 0.3599405584865487
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:37:05.189548",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_moving",
+      "presence": true,
+      "confidence": 0.3599405584865487
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:37:06.191679",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_moving",
+      "presence": true,
+      "confidence": 0.38902864855334396
+    },
+    "confidence": 0,
+    "node_id": 4
+  },
+  {
+    "timestamp": "2026-05-25T22:37:07.196587",
+    "presence": 0,
+    "motion": 0,
+    "rssi": 0,
+    "classification": {
+      "motion_level": "present_moving",
+      "presence": true,
+      "confidence": 0.38902864855334396
+    },
+    "confidence": 0,
+    "node_id": 4
+  }
+]
