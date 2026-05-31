@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOMIAN — WiFi Sensing Dashboard v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=Syne:wght@400;500;700&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:   #1C1C1E;
+  --dark:    #3A3A3C;
+  --orange:  #F97316;
+  --amber:   #FDBA74;
+  --slate:   #64748B;
+  --cream:   #FFF7ED;
+  --white:   #FFFFFF;
+  --green:   #22C55E;
+  --red:     #EF4444;
+  --yellow:  #EAB308;
+  --blue:    #38BDF8;
+  --purple:  #A78BFA;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--black);
+  color: var(--cream);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Header ── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(249,115,22,0.2);
+  background: rgba(28,28,30,0.97);
+  backdrop-filter: blur(12px);
+}
+
+.logo-area { display: flex; align-items: center; gap: 1rem; }
+.logo-svg  { width: 44px; height: 44px; }
+.brand-text { display: flex; flex-direction: column; }
+.brand-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800; font-size: 1.4rem;
+  color: var(--white); letter-spacing: 0.05em; line-height: 1;
+}
+.brand-tagline {
+  font-size: 0.6rem; color: var(--orange);
+  letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500;
+}
+.header-right { display: flex; align-items: center; gap: 1.25rem; }
+
+.connection-badge {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.35rem 0.8rem; border-radius: 999px;
+  border: 1px solid rgba(249,115,22,0.3);
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.3s;
+}
+.connection-badge.connected    { background: rgba(34,197,94,0.1);  border-color: rgba(34,197,94,0.4);  color: var(--green); }
+.connection-badge.disconnected { background: rgba(239,68,68,0.1);  border-color: rgba(239,68,68,0.4);  color: var(--red); }
+.connection-badge.connecting   { background: rgba(234,179,8,0.1);  border-color: rgba(234,179,8,0.4);  color: var(--yellow); }
+
+.dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.dot.pulse { animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.4; transform:scale(0.8); }
+}
+
+.live-badge {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.62rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--orange); font-weight: 600;
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--orange); animation: livepulse 1s ease-in-out infinite;
+}
+@keyframes livepulse {
+  0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(249,115,22,0.4); }
+  50%      { opacity:0.7; box-shadow: 0 0 0 4px rgba(249,115,22,0); }
+}
+
+.clock { font-family: 'Syne Mono', monospace; font-size: 0.82rem; color: var(--slate); }
+
+/* ── Main ── */
+main {
+  position: relative; z-index: 1;
+  padding: 1.5rem 2rem 5rem;
+  max-width: 1400px; margin: 0 auto;
+}
+
+/* ── Section headers ── */
+.section { margin-bottom: 2rem; }
+
+.section-header {
+  display: flex; align-items: center; gap: 0.9rem;
+  margin-bottom: 0.85rem;
+}
+
+.section-tag {
+  font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--orange); font-weight: 700;
+  background: rgba(249,115,22,0.08);
+  border: 1px solid rgba(249,115,22,0.25);
+  border-radius: 4px; padding: 0.18rem 0.55rem; white-space: nowrap;
+}
+
+.section-tag.csi    { color: var(--blue);   background: rgba(56,189,248,0.06);   border-color: rgba(56,189,248,0.2); }
+.section-tag.vital  { color: var(--green);  background: rgba(34,197,94,0.06);    border-color: rgba(34,197,94,0.2); }
+.section-tag.track  { color: var(--amber);  background: rgba(253,186,116,0.06);  border-color: rgba(253,186,116,0.2); }
+.section-tag.infra  { color: var(--purple); background: rgba(167,139,250,0.06);  border-color: rgba(167,139,250,0.2); }
+.section-tag.hist   { color: var(--slate);  background: rgba(100,116,139,0.06);  border-color: rgba(100,116,139,0.2); }
+
+.section-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800; font-size: 0.8rem;
+  color: var(--cream); letter-spacing: 0.1em; text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.section-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, rgba(249,115,22,0.2), transparent);
+}
+
+.section-module {
+  font-size: 0.58rem; color: var(--slate);
+  letter-spacing: 0.08em; font-family: 'Syne Mono', monospace; white-space: nowrap;
+}
+
+/* ── Section grids ── */
+.sgrid {
+  display: grid; gap: 0.9rem;
+}
+.sgrid-1  { grid-template-columns: 1fr; }
+.sgrid-2  { grid-template-columns: 1fr 1fr; }
+.sgrid-3  { grid-template-columns: 1fr 1fr 1fr; }
+.sgrid-4  { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.sgrid-2-1{ grid-template-columns: 2fr 1fr; }
+.sgrid-1-2{ grid-template-columns: 1fr 2fr; }
+
+/* ── Cards base ── */
+.card {
+  background: rgba(58,58,60,0.35);
+  border: 1px solid rgba(249,115,22,0.12);
+  border-radius: 12px; padding: 1.1rem;
+  position: relative; overflow: hidden; transition: border-color 0.3s;
+}
+.card:hover { border-color: rgba(249,115,22,0.3); }
+.card::before {
+  content: ''; position: absolute; top:0; left:0; right:0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.card:hover::before { opacity: 1; }
+
+.card.accent-csi   { border-color: rgba(56,189,248,0.12); }
+.card.accent-csi:hover { border-color: rgba(56,189,248,0.3); }
+.card.accent-csi::before { background: linear-gradient(90deg, transparent, var(--blue), transparent); }
+
+.card.accent-vital { border-color: rgba(34,197,94,0.12); }
+.card.accent-vital:hover { border-color: rgba(34,197,94,0.3); }
+.card.accent-vital::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+
+.card.accent-track { border-color: rgba(253,186,116,0.12); }
+.card.accent-track:hover { border-color: rgba(253,186,116,0.3); }
+.card.accent-track::before { background: linear-gradient(90deg, transparent, var(--amber), transparent); }
+
+.card.accent-infra { border-color: rgba(167,139,250,0.12); }
+.card.accent-infra:hover { border-color: rgba(167,139,250,0.3); }
+.card.accent-infra::before { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+
+.card-label {
+  font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--slate); font-weight: 600; margin-bottom: 0.65rem;
+  display: flex; align-items: center; gap: 0.45rem;
+}
+.card-label svg { width: 11px; height: 11px; opacity: 0.7; }
+
+/* ── SECCIÓN 1: DETECCIÓN ── */
+.deteccion-card {
+  display: flex; align-items: center; gap: 2.5rem; padding: 1.5rem 2rem;
+}
+
+.det-estado { display: flex; flex-direction: column; gap: 0.4rem; min-width: 220px; }
+
+.estado-value {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 2.2rem; font-weight: 800;
+  letter-spacing: 0.02em; transition: color 0.5s; line-height: 1;
+}
+.estado-value.absent         { color: var(--slate); }
+.estado-value.present_still  { color: var(--amber); }
+.estado-value.present_moving { color: var(--orange); }
+.estado-value.active         { color: #FF6B35; }
+.estado-value.unknown        { color: var(--dark); }
+
+.estado-subtitle {
+  font-size: 0.65rem; color: var(--slate);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+.det-confianza {
+  display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+}
+
+.conf-ring { position: relative; width: 80px; height: 80px; }
+.conf-ring svg { transform: rotate(-90deg); width: 80px; height: 80px; }
+.conf-circle-bg   { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 6; }
+.conf-circle-fill {
+  fill: none; stroke: var(--orange); stroke-width: 6; stroke-linecap: round;
+  stroke-dasharray: 220; stroke-dashoffset: 220;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.conf-text {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1rem; font-weight: 800; color: var(--cream);
+}
+.conf-label { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate); }
+
+.det-meta {
+  display: flex; flex-direction: column; gap: 0.6rem; flex: 1;
+}
+
+.det-meta-row {
+  display: flex; align-items: center; gap: 0.6rem;
+}
+
+.det-meta-key {
+  font-size: 0.65rem; color: var(--slate); letter-spacing: 0.05em; width: 90px;
+}
+
+.det-meta-val {
+  font-family: 'Syne Mono', monospace; font-size: 0.75rem; color: var(--cream);
+}
+
+.presencia-indicator {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em;
+  padding: 0.25rem 0.65rem; border-radius: 999px;
+}
+.presencia-indicator.si   { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.presencia-indicator.no   { background: rgba(100,116,139,0.12); color: var(--slate); border: 1px solid rgba(100,116,139,0.2); }
+
+.det-counters {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem;
+  border-left: 1px solid rgba(249,115,22,0.1); padding-left: 1.5rem;
+}
+.det-cnt-label { font-size: 0.6rem; color: var(--slate); letter-spacing: 0.1em; text-transform: uppercase; }
+.det-cnt-val {
+  font-family: 'Syne Mono', monospace; font-size: 1.1rem; color: var(--orange); line-height: 1;
+}
+
+/* ── SECCIÓN 2: SEÑAL CSI ── */
+.bar-row {
+  display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.5rem;
+}
+.bar-row:last-child { margin-bottom: 0; }
+.bar-name { font-size: 0.65rem; color: var(--slate); width: 130px; flex-shrink: 0; letter-spacing: 0.04em; }
+.bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+.bar-fill  { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+.bar-fill.motion   { background: var(--orange); }
+.bar-fill.breath   { background: var(--amber); }
+.bar-fill.spectral { background: var(--blue); }
+.bar-fill.variance { background: var(--slate); }
+.bar-val {
+  font-family: 'Syne Mono', monospace; font-size: 0.68rem;
+  color: var(--cream); width: 42px; text-align: right; flex-shrink: 0;
+}
+
+.metric-big {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 2.5rem; font-weight: 800; line-height: 1;
+}
+.metric-unit { font-size: 0.75rem; color: var(--slate); margin-top: 0.1rem; }
+.metric-label { font-size: 0.6rem; color: var(--slate); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.5rem; }
+
+.signal-rows { display: flex; flex-direction: column; gap: 0.6rem; }
+.signal-row  { display: flex; justify-content: space-between; align-items: center; font-size: 0.73rem; }
+.signal-key  { color: var(--slate); letter-spacing: 0.04em; }
+.signal-val  { font-family: 'Syne Mono', monospace; color: var(--cream); }
+.signal-val.good   { color: var(--green); }
+.signal-val.medium { color: var(--yellow); }
+.signal-val.poor   { color: var(--red); }
+
+/* ── SECCIÓN 3: SIGNOS VITALES ── */
+.vital-card { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.vital-main { display: flex; align-items: baseline; gap: 0.3rem; }
+.vital-number {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 3rem; font-weight: 800; color: var(--green); line-height: 1; transition: color 0.3s;
+}
+.vital-unit { font-size: 0.78rem; color: var(--slate); font-weight: 500; }
+
+.vital-conf {
+  font-size: 0.68rem; color: var(--slate); display: flex; align-items: center; gap: 0.4rem;
+}
+.vital-conf-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+.vital-conf-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.5s; }
+
+.vital-waveform { height: 38px; position: relative; overflow: hidden; margin-top: 0.25rem; }
+.vital-waveform canvas { width: 100%; height: 100%; }
+
+.vital-range { font-size: 0.6rem; margin-top: 0.15rem; }
+
+/* ── SECCIÓN 4: TRACKING ── */
+.personas-count {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 3.5rem; font-weight: 800; color: var(--amber); line-height: 1;
+}
+.personas-ids { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
+.persona-tag {
+  font-family: 'Syne Mono', monospace; font-size: 0.62rem;
+  padding: 0.18rem 0.48rem; border-radius: 4px;
+  background: rgba(253,186,116,0.08); border: 1px solid rgba(253,186,116,0.2); color: var(--amber);
+}
+
+.asignacion-badge {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  font-size: 0.62rem; padding: 0.25rem 0.6rem; border-radius: 999px;
+  font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  margin-top: 0.5rem; width: fit-content;
+}
+.asignacion-badge.directa      { background: rgba(34,197,94,0.12);  color: var(--green);  border: 1px solid rgba(34,197,94,0.3); }
+.asignacion-badge.ambigua      { background: rgba(234,179,8,0.12);  color: var(--yellow); border: 1px solid rgba(234,179,8,0.3); }
+.asignacion-badge.sin_persona  { background: rgba(100,116,139,0.12);color: var(--slate);  border: 1px solid rgba(100,116,139,0.2); }
+.asignacion-badge.baja_confianza{ background: rgba(239,68,68,0.12); color: var(--red);    border: 1px solid rgba(239,68,68,0.3); }
+
+/* ── SECCIÓN 5: NODOS ── */
+.nodos-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;
+}
+.nodo-item {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(167,139,250,0.1);
+  border-radius: 10px; padding: 0.9rem 0.6rem; text-align: center; transition: all 0.3s;
+}
+.nodo-item.active { border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.05); }
+.nodo-item.stale  { border-color: rgba(239,68,68,0.25); opacity: 0.5; }
+
+.nodo-id {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.15rem; font-weight: 800; color: var(--purple); line-height: 1;
+}
+.nodo-status { font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; margin: 0.25rem 0; }
+.nodo-status.active   { color: var(--green); }
+.nodo-status.inactive { color: var(--slate); }
+.nodo-conf { font-family: 'Syne Mono', monospace; font-size: 0.65rem; color: var(--slate); }
+.nodo-fps  { font-family: 'Syne Mono', monospace; font-size: 0.58rem; color: var(--dark); margin-top: 0.15rem; }
+
+/* ── SECCIÓN 6: HISTORIAL ── */
+.chart-area {
+  height: 85px; position: relative; margin-top: 0.4rem; overflow: hidden;
+}
+.chart-area canvas { width: 100%; height: 100%; }
+
+/* ── Ticker ── */
+.ticker {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(28,28,30,0.97);
+  border-top: 1px solid rgba(249,115,22,0.15);
+  padding: 0.45rem 2rem;
+  display: flex; align-items: center; gap: 1.5rem;
+  font-family: 'Syne Mono', monospace; font-size: 0.68rem;
+  color: var(--slate); overflow: hidden;
+}
+.ticker-item { display: flex; align-items: center; gap: 0.4rem; white-space: nowrap; flex-shrink: 0; }
+.ticker-key { color: var(--orange); }
+.ticker-val { color: var(--cream); }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo-area">
+    <img src="domian_isotipo.svg" class="logo-svg" alt="DOMIAN">
+    <div class="brand-text">
+      <div class="brand-name">DOMIAN</div>
+      <div class="brand-tagline">WiFi Sensing · Fase 1</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div>EN VIVO</div>
+    <div class="connection-badge connecting" id="connBadge">
+      <div class="dot pulse" id="connDot"></div>
+      <span id="connText">Conectando</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <span style="font-size:0.6rem;color:var(--slate);letter-spacing:0.08em;text-transform:uppercase;">Refresco</span>
+      <input type="range" id="refreshSlider" min="100" max="5000" step="100" value="500"
+        style="width:72px;accent-color:var(--orange);cursor:pointer;"
+        oninput="updateIntervalMs=+this.value; document.getElementById('refreshLabel').textContent=(this.value>=1000?(this.value/1000).toFixed(1)+'s':this.value+'ms')">
+      <span style="font-family:'Syne Mono',monospace;font-size:0.68rem;color:var(--amber);min-width:34px;" id="refreshLabel">500ms</span>
+    </div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECCIÓN 1 — DETECCIÓN DE PRESENCIA
+       Módulo: classification{}
+       ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">Módulo 1</div>
+      <div class="section-title">Detección de Presencia</div>
+      <div class="section-line"></div>
+      <div class="section-module">classification{}</div>
+    </div>
+
+    <div class="sgrid sgrid-1">
+      <div class="card deteccion-card">
+
+        <div class="det-estado">
+          <div class="card-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            Estado actual
+          </div>
+          <div class="estado-value absent" id="estadoValue">AUSENTE</div>
+          <div class="estado-subtitle" id="estadoSubtitle">Sin presencia detectada</div>
+          <div style="margin-top:0.6rem;">
+            <div class="presencia-indicator no" id="presenciaBadge">· Sin presencia</div>
+          </div>
+        </div>
+
+        <div class="det-confianza">
+          <div class="conf-ring">
+            <svg viewBox="0 0 80 80">
+              <circle class="conf-circle-bg" cx="40" cy="40" r="35"/>
+              <circle class="conf-circle-fill" id="confCircle" cx="40" cy="40" r="35"/>
+            </svg>
+            <div class="conf-text" id="confText">0%</div>
+          </div>
+          <div class="conf-label">Confianza</div>
+        </div>
+
+        <div class="det-meta">
+          <div class="card-label">Parámetros de clasificación</div>
+          <div class="det-meta-row">
+            <div class="det-meta-key">Estado raw</div>
+            <div class="det-meta-val" id="metaMotionLevel">—</div>
+          </div>
+          <div class="det-meta-row">
+            <div class="det-meta-key">Presencia bool</div>
+            <div class="det-meta-val" id="metaPresencia">—</div>
+          </div>
+          <div class="det-meta-row">
+            <div class="det-meta-key">Señal confiable</div>
+            <div class="det-meta-val" id="metaConfiable">—</div>
+          </div>
+          <div class="det-meta-row">
+            <div class="det-meta-key">Fuente</div>
+            <div class="det-meta-val" id="metaSource">—</div>
+          </div>
+        </div>
+
+        <div class="det-counters">
+          <div class="det-cnt-label">Tick</div>
+          <div class="det-cnt-val" id="tickVal">—</div>
+          <div class="det-cnt-label" style="margin-top:0.6rem;">Frames</div>
+          <div class="det-cnt-val" style="color:var(--amber);" id="frameCount">0</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Fila 2: umbral + último estado confiable -->
+    <div class="sgrid" style="grid-template-columns: 1fr 2fr; margin-top: 0.9rem;">
+
+      <!-- Umbral de confianza -->
+      <div class="card" style="display:flex;flex-direction:column;gap:0.85rem;justify-content:center;">
+        <div class="card-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Umbral de confianza
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.55rem;">
+            <span style="font-size:0.62rem;color:var(--slate);letter-spacing:0.05em;">Mínimo para registrar</span>
+            <span id="thresholdLabel" style="font-family:'Syne Mono',monospace;font-size:1.5rem;font-weight:800;color:var(--orange);">80%</span>
+          </div>
+          <input type="range" id="thresholdSlider" min="0" max="100" step="5" value="80"
+            style="width:100%;accent-color:var(--orange);cursor:pointer;"
+            oninput="reliableThreshold=+this.value/100; document.getElementById('thresholdLabel').textContent=this.value+'%';">
+          <div style="display:flex;justify-content:space-between;margin-top:0.3rem;">
+            <span style="font-size:0.55rem;color:var(--dark);">0%</span>
+            <span style="font-size:0.55rem;color:var(--slate);">umbral actual</span>
+            <span style="font-size:0.55rem;color:var(--dark);">100%</span>
+          </div>
+        </div>
+        <div style="font-size:0.62rem;color:var(--slate);line-height:1.6;border-top:1px solid rgba(255,255,255,0.05);padding-top:0.7rem;">
+          Solo se registra el estado cuando la confianza del clasificador supera el umbral definido.
+        </div>
+      </div>
+
+      <!-- Último estado confiable -->
+      <div class="card" id="reliableCard" style="border-color:rgba(100,116,139,0.15);transition:border-color 0.5s;">
+        <div class="card-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          Último Estado Confiable
+        </div>
+        <div style="display:flex;align-items:center;gap:2rem;">
+
+          <div style="flex:1;">
+            <div style="font-size:0.58rem;color:var(--slate);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem;">Estado registrado</div>
+            <div class="estado-value absent" id="reliableEstado" style="font-size:1.55rem;">—</div>
+            <div style="font-size:0.62rem;color:var(--slate);margin-top:0.35rem;" id="reliableSubtitle">Aún sin medición confiable</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:0.55rem;flex:1;" class="signal-rows">
+            <div class="signal-row">
+              <div class="signal-key">Hora de medición</div>
+              <div class="signal-val" id="reliableHora" style="font-family:'Syne Mono',monospace;">—</div>
+            </div>
+            <div class="signal-row">
+              <div class="signal-key">Confianza registrada</div>
+              <div class="signal-val good" id="reliableConf">—</div>
+            </div>
+            <div class="signal-row">
+              <div class="signal-key">Umbral al registrar</div>
+              <div class="signal-val" id="reliableUmbral" style="color:var(--orange);">—</div>
+            </div>
+          </div>
+
+          <div style="text-align:center;border-left:1px solid rgba(255,255,255,0.05);padding-left:1.5rem;min-width:90px;">
+            <div style="font-size:0.58rem;color:var(--slate);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.25rem;">Última confiable</div>
+            <div id="reliableAgo" style="font-family:'Syne Mono',monospace;font-size:2rem;font-weight:800;color:var(--amber);line-height:1;">—</div>
+            <div style="font-size:0.55rem;color:var(--slate);margin-top:0.25rem;">hace (segundos)</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECCIÓN 2 — ANÁLISIS DE SEÑAL CSI
+       Módulo: features{}
+       ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag csi">Módulo 2</div>
+      <div class="section-title">Análisis de Señal CSI</div>
+      <div class="section-line" style="background: linear-gradient(90deg, rgba(56,189,248,0.25), transparent);"></div>
+      <div class="section-module">features{}</div>
+    </div>
+
+    <div class="sgrid sgrid-3">
+
+      <!-- Potencias de banda -->
+      <div class="card accent-csi" style="grid-column: span 2;">
+        <div class="card-label" style="color:var(--blue);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6l7 7 4-4 6 6 5-5"/></svg>
+          Potencias espectrales por banda
+        </div>
+        <div class="bar-row">
+          <div class="bar-name">Banda movimiento</div>
+          <div class="bar-track"><div class="bar-fill motion" id="barMotion" style="width:0%"></div></div>
+          <div class="bar-val" id="valMotion">0.0</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-name">Banda respiración</div>
+          <div class="bar-track"><div class="bar-fill breath" id="barBreath" style="width:0%"></div></div>
+          <div class="bar-val" id="valBreath">0.0</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-name">Potencia espectral</div>
+          <div class="bar-track"><div class="bar-fill spectral" id="barSpectral" style="width:0%"></div></div>
+          <div class="bar-val" id="valSpectral">0.0</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-name">Varianza CSI</div>
+          <div class="bar-track"><div class="bar-fill variance" id="barVariance" style="width:0%"></div></div>
+          <div class="bar-val" id="valVariance">0.0</div>
+        </div>
+      </div>
+
+      <!-- Métricas derivadas -->
+      <div class="card accent-csi">
+        <div class="card-label" style="color:var(--blue);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>
+          Métricas derivadas
+        </div>
+        <div class="signal-rows">
+          <div class="signal-row">
+            <div class="signal-key">Freq. dominante</div>
+            <div class="signal-val" id="sigFreq" style="color:var(--blue);">— Hz</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">Change points</div>
+            <div class="signal-val" id="sigChangePts">—</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">RSSI promedio</div>
+            <div class="signal-val" id="sigRSSI">— dBm</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">Calidad señal</div>
+            <div class="signal-val" id="sigQual">—</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">Nodos activos</div>
+            <div class="signal-val" id="sigNodos">—</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECCIÓN 3 — SIGNOS VITALES
+       Módulo: vital_signs{}
+       ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag vital">Módulo 3</div>
+      <div class="section-title">Signos Vitales</div>
+      <div class="section-line" style="background: linear-gradient(90deg, rgba(34,197,94,0.25), transparent);"></div>
+      <div class="section-module">vital_signs{}</div>
+    </div>
+
+    <div class="sgrid sgrid-3">
+
+      <!-- Respiración -->
+      <div class="card accent-vital vital-card">
+        <div class="card-label" style="color:var(--green);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 12h8M12 8v8"/></svg>
+          Frecuencia respiratoria
+        </div>
+        <div class="vital-main">
+          <div class="vital-number" id="breathVal" style="color:var(--green);">—</div>
+          <div class="vital-unit">RPM</div>
+        </div>
+        <div class="vital-conf">
+          <span>Confianza</span>
+          <div class="vital-conf-bar"><div class="vital-conf-fill" id="breathConfBar" style="width:0%;background:var(--green);"></div></div>
+          <span id="breathConfVal">0%</span>
+        </div>
+        <div class="vital-range" id="breathRange" style="color:var(--slate);">Normal: 12–20 RPM</div>
+        <div class="vital-waveform"><canvas id="breathCanvas"></canvas></div>
+      </div>
+
+      <!-- Pulso -->
+      <div class="card accent-vital vital-card">
+        <div class="card-label" style="color:var(--green);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Frecuencia cardíaca
+        </div>
+        <div class="vital-main">
+          <div class="vital-number" id="heartVal" style="color:var(--green);">—</div>
+          <div class="vital-unit">BPM</div>
+        </div>
+        <div class="vital-conf">
+          <span>Confianza</span>
+          <div class="vital-conf-bar"><div class="vital-conf-fill" id="heartConfBar" style="width:0%;background:var(--green);"></div></div>
+          <span id="heartConfVal">0%</span>
+        </div>
+        <div class="vital-range" id="heartRange" style="color:var(--slate);">Normal: 60–100 BPM</div>
+        <div class="vital-waveform"><canvas id="heartCanvas"></canvas></div>
+      </div>
+
+      <!-- Interpretación -->
+      <div class="card accent-vital">
+        <div class="card-label" style="color:var(--green);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Interpretación clínica
+        </div>
+        <div class="signal-rows">
+          <div class="signal-row">
+            <div class="signal-key">Estado respiratorio</div>
+            <div class="signal-val" id="breathStatus" style="color:var(--slate);">—</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">Estado cardíaco</div>
+            <div class="signal-val" id="heartStatus" style="color:var(--slate);">—</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">Asignación vitales</div>
+            <div class="signal-val" id="sigAsignacion">—</div>
+          </div>
+          <div class="signal-row" style="margin-top:0.3rem;">
+            <div class="signal-key">Limitación</div>
+            <div class="signal-val" id="nodeCount" style="font-size:0.6rem;color:var(--slate);">—</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Fila 2: últimos vitales confiables -->
+    <div class="sgrid sgrid-2" style="margin-top:0.9rem;">
+
+      <!-- Último valor confiable — Respiración -->
+      <div class="card accent-vital">
+        <div class="card-label" style="color:var(--green);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          Último valor confiable — Respiración
+        </div>
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem;background:rgba(255,255,255,0.03);border-radius:7px;padding:0.4rem 0.65rem;">
+          <span style="font-size:0.6rem;color:var(--slate);white-space:nowrap;letter-spacing:0.05em;">Umbral conf.</span>
+          <input type="range" id="breathThresholdSlider" min="0" max="100" step="5" value="50"
+            style="flex:1;accent-color:var(--green);cursor:pointer;"
+            oninput="breathReliableThreshold=+this.value/100; document.getElementById('breathThresholdLabel').textContent=this.value+'%';">
+          <span id="breathThresholdLabel" style="font-family:'Syne Mono',monospace;font-size:0.8rem;font-weight:700;color:var(--green);min-width:34px;text-align:right;">50%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:1.25rem;">
+          <div>
+            <div style="font-size:0.57rem;color:var(--slate);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.2rem;">RPM registradas</div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:2.2rem;font-weight:800;line-height:1;" id="reliableBreathVal">—</div>
+            <div style="font-size:0.6rem;color:var(--slate);margin-top:0.15rem;" id="reliableBreathStatus">—</div>
+          </div>
+          <div style="flex:1;" class="signal-rows">
+            <div class="signal-row">
+              <div class="signal-key">Hora</div>
+              <div class="signal-val" id="reliableBreathHora">—</div>
+            </div>
+            <div class="signal-row">
+              <div class="signal-key">Confianza</div>
+              <div class="signal-val" id="reliableBreathConf">—</div>
+            </div>
+          </div>
+          <div style="text-align:center;border-left:1px solid rgba(255,255,255,0.05);padding-left:1rem;min-width:68px;">
+            <div style="font-size:0.55rem;color:var(--slate);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem;">Hace</div>
+            <div id="reliableBreathAgo" style="font-family:'Syne Mono',monospace;font-size:1.6rem;font-weight:800;color:var(--amber);line-height:1;">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Último valor confiable — Cardíaca -->
+      <div class="card accent-vital">
+        <div class="card-label" style="color:var(--green);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          Último valor confiable — Cardíaca
+        </div>
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem;background:rgba(255,255,255,0.03);border-radius:7px;padding:0.4rem 0.65rem;">
+          <span style="font-size:0.6rem;color:var(--slate);white-space:nowrap;letter-spacing:0.05em;">Umbral conf.</span>
+          <input type="range" id="heartThresholdSlider" min="0" max="100" step="5" value="30"
+            style="flex:1;accent-color:var(--green);cursor:pointer;"
+            oninput="heartReliableThreshold=+this.value/100; document.getElementById('heartThresholdLabel').textContent=this.value+'%';">
+          <span id="heartThresholdLabel" style="font-family:'Syne Mono',monospace;font-size:0.8rem;font-weight:700;color:var(--green);min-width:34px;text-align:right;">30%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:1.25rem;">
+          <div>
+            <div style="font-size:0.57rem;color:var(--slate);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.2rem;">BPM registrados</div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:2.2rem;font-weight:800;line-height:1;" id="reliableHeartVal">—</div>
+            <div style="font-size:0.6rem;color:var(--slate);margin-top:0.15rem;" id="reliableHeartStatus">—</div>
+          </div>
+          <div style="flex:1;" class="signal-rows">
+            <div class="signal-row">
+              <div class="signal-key">Hora</div>
+              <div class="signal-val" id="reliableHeartHora">—</div>
+            </div>
+            <div class="signal-row">
+              <div class="signal-key">Confianza</div>
+              <div class="signal-val" id="reliableHeartConf">—</div>
+            </div>
+          </div>
+          <div style="text-align:center;border-left:1px solid rgba(255,255,255,0.05);padding-left:1rem;min-width:68px;">
+            <div style="font-size:0.55rem;color:var(--slate);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem;">Hace</div>
+            <div id="reliableHeartAgo" style="font-family:'Syne Mono',monospace;font-size:1.6rem;font-weight:800;color:var(--amber);line-height:1;">—</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECCIÓN 4 — TRACKING DE PERSONAS
+       Módulo: persons[]
+       ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag track">Módulo 4</div>
+      <div class="section-title">Tracking de Personas</div>
+      <div class="section-line" style="background: linear-gradient(90deg, rgba(253,186,116,0.25), transparent);"></div>
+      <div class="section-module">persons[]</div>
+    </div>
+
+    <div class="sgrid sgrid-3">
+
+      <!-- Conteo -->
+      <div class="card accent-track">
+        <div class="card-label" style="color:var(--amber);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Personas detectadas
+        </div>
+        <div id="personIconsRow" style="display:flex;align-items:flex-end;gap:0.55rem;flex-wrap:wrap;min-height:54px;margin-bottom:0.55rem;"></div>
+        <div style="display:flex;align-items:baseline;gap:0.4rem;margin-bottom:0.3rem;">
+          <span class="personas-count" id="personasCount" style="font-size:1.5rem;">0</span>
+          <span style="font-size:0.62rem;color:var(--slate);">personas detectadas</span>
+        </div>
+        <div class="personas-ids" id="personasIds"></div>
+      </div>
+
+      <!-- Asignación -->
+      <div class="card accent-track">
+        <div class="card-label" style="color:var(--amber);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Tipo de asignación
+        </div>
+        <div style="margin-top:0.4rem;">
+          <div class="asignacion-badge sin_persona" id="asignacionBadge">sin persona</div>
+        </div>
+        <div style="margin-top:1rem;" class="signal-rows">
+          <div class="signal-row">
+            <div class="signal-key">Confianza clf.</div>
+            <div class="signal-val" id="trackConf">—</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">Calidad señal</div>
+            <div class="signal-val" id="trackSQ">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nota sobre precisión -->
+      <div class="card accent-track">
+        <div class="card-label" style="color:var(--amber);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Precisión del tracking
+        </div>
+        <div class="signal-rows">
+          <div class="signal-row">
+            <div class="signal-key">1 nodo</div>
+            <div class="signal-val" style="color:var(--yellow);font-size:0.62rem;">Sobreestima personas</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">2–3 nodos</div>
+            <div class="signal-val" style="color:var(--amber);font-size:0.62rem;">Confianza moderada</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">4 nodos</div>
+            <div class="signal-val" style="color:var(--green);font-size:0.62rem;">Alta precisión</div>
+          </div>
+          <div class="signal-row" style="margin-top:0.3rem;">
+            <div class="signal-key">Keypoints</div>
+            <div class="signal-val" style="color:var(--slate);">17 articulaciones</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECCIÓN 5 — INFRAESTRUCTURA ESP32-S3
+       Módulo: node_features[]
+       ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag infra">Módulo 5</div>
+      <div class="section-title">Infraestructura ESP32-S3</div>
+      <div class="section-line" style="background: linear-gradient(90deg, rgba(167,139,250,0.25), transparent);"></div>
+      <div class="section-module">node_features[]</div>
+    </div>
+
+    <div class="card accent-infra">
+      <div class="card-label" style="color:var(--purple);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Estado de nodos — WiFi CSI sensing nodes
+      </div>
+      <div class="nodos-grid" id="nodosGrid">
+        <div class="nodo-item" id="nodo1">
+          <div class="nodo-id">N1</div>
+          <div class="nodo-status inactive">inactivo</div>
+          <div class="nodo-conf">—</div>
+          <div class="nodo-fps">— fps</div>
+        </div>
+        <div class="nodo-item" id="nodo2">
+          <div class="nodo-id">N2</div>
+          <div class="nodo-status inactive">inactivo</div>
+          <div class="nodo-conf">—</div>
+          <div class="nodo-fps">— fps</div>
+        </div>
+        <div class="nodo-item" id="nodo3">
+          <div class="nodo-id">N3</div>
+          <div class="nodo-status inactive">inactivo</div>
+          <div class="nodo-conf">—</div>
+          <div class="nodo-fps">— fps</div>
+        </div>
+        <div class="nodo-item" id="nodo4">
+          <div class="nodo-id">N4</div>
+          <div class="nodo-status inactive">inactivo</div>
+          <div class="nodo-conf">—</div>
+          <div class="nodo-fps">— fps</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECCIÓN 6 — HISTORIAL TEMPORAL
+       Últimos 120 frames
+       ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag hist">Módulo 6</div>
+      <div class="section-title">Historial Temporal</div>
+      <div class="section-line" style="background: linear-gradient(90deg, rgba(100,116,139,0.25), transparent);"></div>
+      <div class="section-module">últimos 120 frames</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Cronología de detección de presencia
+      </div>
+      <div class="chart-area"><canvas id="historialCanvas"></canvas></div>
+      <div style="display:flex;gap:1.25rem;margin-top:0.65rem;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:0.4rem;">
+          <div style="width:12px;height:10px;background:#F97316;border-radius:2px;flex-shrink:0;"></div>
+          <span style="font-size:0.6rem;color:var(--slate);">en movimiento</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;">
+          <div style="width:12px;height:10px;background:#FDBA74;border-radius:2px;flex-shrink:0;"></div>
+          <span style="font-size:0.6rem;color:var(--slate);">quieto</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;">
+          <div style="width:12px;height:10px;background:#FF6B35;border-radius:2px;flex-shrink:0;"></div>
+          <span style="font-size:0.6rem;color:var(--slate);">actividad intensa</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;">
+          <div style="width:12px;height:10px;background:#3A3A3C;border-radius:2px;border:1px solid rgba(255,255,255,0.08);flex-shrink:0;"></div>
+          <span style="font-size:0.6rem;color:var(--slate);">ausente</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── TICKER ── -->
+<div class="ticker">
+  <div class="ticker-item"><span class="ticker-key">DOMIAN</span><span class="ticker-val">WiFi Sensing v2.0</span></div>
+  <div class="ticker-item"><span class="ticker-key">ESTADO</span><span class="ticker-val" id="tEstado">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">NODOS</span><span class="ticker-val" id="tNodo">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">MOVIMIENTO</span><span class="ticker-val" id="tMotion">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">RESPIRACIÓN</span><span class="ticker-val" id="tBreath">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">PULSO</span><span class="ticker-val" id="tHeart">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">VARIANZA</span><span class="ticker-val" id="tVariance">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">PERSONAS</span><span class="ticker-val" id="tPersonas">—</span></div>
+</div>
+
+<script>
+const WS_URL  = 'ws://192.168.0.15:8765/ws/sensing';
+const MAX_HIST = 120;
+
+// Mapeo de estados internos a español
+const STATE_ES = {
+  'absent':          'AUSENTE',
+  'present_still':   'PRESENCIA QUIETA',
+  'present_moving':  'PRESENCIA EN MOVIMIENTO',
+  'active':          'ACTIVIDAD INTENSA',
+  'unknown':         'DESCONOCIDO'
+};
+
+const STATE_SUBTITLE = {
+  'absent':          'Sin presencia detectada',
+  'present_still':   'Persona quieta — sentada o durmiendo',
+  'present_moving':  'Persona en movimiento activo',
+  'active':          'Actividad intensa — ejercicio o movimientos rápidos',
+  'unknown':         'Sin datos suficientes — calibrando'
+};
+
+let frameCount   = 0;
+let breathHistory = [];
+let heartHistory  = [];
+let presHistory   = [];
+let ws = null;
+let updateIntervalMs = 500;
+
+// Último estado confiable
+let reliableThreshold = 0.80;
+let lastReliableState = null;
+let lastReliableTime  = null;
+let lastReliableConf  = 0;
+
+// Últimos vitales confiables
+let breathReliableThreshold = 0.50;
+let lastBreathReliable      = null; // { value, time, conf }
+let heartReliableThreshold  = 0.30;
+let lastHeartReliable       = null; // { value, time, conf }
+
+// ── Reloj ──────────────────────────────────────────────────────
+function updateClock() {
+  document.getElementById('clock').textContent = new Date().toTimeString().slice(0,8);
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Waveform ───────────────────────────────────────────────────
+function drawWave(canvasId, history, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width  = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (history.length < 2) return;
+  const min   = Math.min(...history);
+  const max   = Math.max(...history) || 1;
+  const range = max - min || 1;
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth   = 1.5;
+  ctx.shadowColor = color;
+  ctx.shadowBlur  = 4;
+  history.forEach((v, i) => {
+    const x = (i / (history.length - 1)) * canvas.width;
+    const y = canvas.height - ((v - min) / range) * canvas.height * 0.85 - canvas.height * 0.075;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+// ── Historial ──────────────────────────────────────────────────
+function drawHistorial() {
+  const canvas = document.getElementById('historialCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width  = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (presHistory.length < 2) return;
+  const w = canvas.width;
+  const h = canvas.height;
+  presHistory.forEach((v, i) => {
+    const x   = (i / MAX_HIST) * w;
+    const bw  = w / MAX_HIST + 1;
+    const col = v === 'present_moving' ? '#F97316'
+              : v === 'present_still'  ? '#FDBA74'
+              : v === 'active'         ? '#FF6B35'
+              : v === 'absent'         ? '#3A3A3C' : '#1C1C1E';
+    ctx.fillStyle = col;
+    ctx.fillRect(x, 0, bw, h);
+  });
+}
+
+// ── Confidence ring ────────────────────────────────────────────
+function setConfidence(val) {
+  const circ = document.getElementById('confCircle');
+  const text = document.getElementById('confText');
+  const offset = 220 * (1 - val);
+  circ.style.strokeDashoffset = offset;
+  text.textContent = Math.round(val * 100) + '%';
+  circ.style.stroke = val > 0.6 ? '#F97316' : val > 0.3 ? '#EAB308' : '#64748B';
+}
+
+// ── Barras CSI ─────────────────────────────────────────────────
+function setBar(barId, valId, value, max) {
+  const pct = Math.min(100, (value / max) * 100);
+  document.getElementById(barId).style.width = pct + '%';
+  document.getElementById(valId).textContent  = value.toFixed(1);
+}
+
+// ── Nodos ──────────────────────────────────────────────────────
+function updateNodos(nodeFeatures) {
+  [1, 2, 3, 4].forEach(id => {
+    const el = document.getElementById('nodo' + id);
+    const nf = nodeFeatures.find(n => n.node_id === id);
+    if (!el) return;
+    if (nf) {
+      const stale = nf.stale;
+      el.className = 'nodo-item ' + (stale ? 'stale' : 'active');
+      const rawLevel = nf.classification?.motion_level || '';
+      el.querySelector('.nodo-status').className = 'nodo-status ' + (stale ? 'inactive' : 'active');
+      el.querySelector('.nodo-status').textContent = stale ? 'sin datos' : (STATE_ES[rawLevel] || rawLevel).toLowerCase().split(' ').slice(0,2).join(' ') || 'activo';
+      el.querySelector('.nodo-conf').textContent = Math.round((nf.classification?.confidence || 0) * 100) + '%';
+      el.querySelector('.nodo-fps').textContent  = (nf.frame_rate_hz || 0).toFixed(1) + ' fps';
+    } else {
+      el.className = 'nodo-item';
+      el.querySelector('.nodo-status').className   = 'nodo-status inactive';
+      el.querySelector('.nodo-status').textContent = 'inactivo';
+      el.querySelector('.nodo-conf').textContent   = '—';
+      el.querySelector('.nodo-fps').textContent    = '— fps';
+    }
+  });
+}
+
+// ── Asignación personas ────────────────────────────────────────
+function calcAsignacion(personCount, confidence, sq) {
+  if (personCount === 0) return 'sin_persona';
+  if (personCount === 1 && confidence > 0.5 && sq > 0.3) return 'directa';
+  if (personCount > 1) return 'ambigua';
+  return 'baja_confianza';
+}
+
+const ASIG_LABEL = {
+  sin_persona:    'sin persona',
+  directa:        'asignación directa',
+  ambigua:        tipo => 'ambigua',
+  baja_confianza: 'baja confianza',
+};
+
+// ── Interpretación clínica ─────────────────────────────────────
+function breathStatusText(bpm) {
+  if (bpm <= 0) return '—';
+  if (bpm < 12) return 'bradipnea';
+  if (bpm <= 20) return 'normal';
+  if (bpm <= 30) return 'elevada';
+  return 'muy elevada';
+}
+function heartStatusText(bpm) {
+  if (bpm <= 0) return '—';
+  if (bpm < 60) return 'bradicardia';
+  if (bpm <= 80) return 'normal';
+  if (bpm <= 100) return 'elevado';
+  return 'taquicardia';
+}
+function statusColor(bpm, low, high) {
+  if (bpm <= 0) return '#64748B';
+  if (bpm < low || bpm > high) return '#EF4444';
+  if (bpm < low + (high - low) * 0.15 || bpm > high - (high - low) * 0.15) return '#EAB308';
+  return '#22C55E';
+}
+
+// ── Iconos de personas ─────────────────────────────────────────
+function personSVG(color) {
+  return `<svg width="34" height="44" viewBox="0 0 24 30" fill="${color}">
+    <circle cx="12" cy="8" r="6"/>
+    <path d="M0 30c0-7.18 5.373-13 12-13s12 5.82 12 13" fill="${color}"/>
+  </svg>`;
+}
+
+function renderPersonIcons(persons) {
+  const row    = document.getElementById('personIconsRow');
+  const count  = persons.length;
+  const shown  = Math.min(count, 5);
+  const colors = ['#FDBA74','#F97316','#FFD580','#FF8C42','#FFC266'];
+
+  let html = '';
+
+  if (count === 0) {
+    html = `<div style="display:flex;flex-direction:column;align-items:center;gap:0.2rem;opacity:0.15;">
+      ${personSVG('#64748B')}
+      <span style="font-family:'Syne Mono',monospace;font-size:0.5rem;color:var(--slate);">—</span>
+    </div>`;
+  } else {
+    for (let i = 0; i < shown; i++) {
+      const p   = persons[i];
+      const col = colors[i % colors.length];
+      html += `<div style="display:flex;flex-direction:column;align-items:center;gap:0.15rem;">
+        ${personSVG(col)}
+        <span style="font-family:'Syne Mono',monospace;font-size:0.5rem;color:var(--slate);">#${p.id}</span>
+      </div>`;
+    }
+    if (count > 5) {
+      html += `<div style="display:flex;align-items:center;justify-content:center;
+        font-family:'Bricolage Grotesque',sans-serif;font-size:1.6rem;font-weight:800;
+        color:var(--amber);width:34px;height:44px;line-height:1;">+${count - 5}</div>`;
+    }
+  }
+
+  row.innerHTML = html;
+}
+
+// ── Actualización principal ────────────────────────────────────
+function updateDashboard(data) {
+  frameCount++;
+  document.getElementById('frameCount').textContent = frameCount;
+
+  const clf     = data.classification || {};
+  const feats   = data.features       || {};
+  const vitals  = data.vital_signs    || {};
+  const persons = data.persons        || [];
+  const nfeats  = data.node_features  || [];
+
+  const motionLevel  = clf.motion_level || 'unknown';
+  const confidence   = clf.confidence   || 0;
+  const presence     = clf.presence     || false;
+  const sq           = vitals.signal_quality || 0;
+  const personCount  = persons.length;
+
+  // ── Sección 1: Detección ──
+  const estadoEl = document.getElementById('estadoValue');
+  estadoEl.textContent = STATE_ES[motionLevel] || motionLevel.toUpperCase();
+  estadoEl.className   = 'estado-value ' + motionLevel;
+  document.getElementById('estadoSubtitle').textContent = STATE_SUBTITLE[motionLevel] || '';
+
+  const confiable = presence && confidence > 0.5 && sq > 0.3;
+  const badge = document.getElementById('presenciaBadge');
+  badge.textContent = confiable ? '✓ Presencia confiable' : presence ? '· Presencia detectada' : '· Sin presencia';
+  badge.className   = 'presencia-indicator ' + (presence ? 'si' : 'no');
+
+  document.getElementById('metaMotionLevel').textContent = motionLevel;
+  document.getElementById('metaPresencia').textContent   = presence ? 'true' : 'false';
+  document.getElementById('metaConfiable').textContent   = confiable ? 'sí' : 'no';
+  document.getElementById('metaSource').textContent      = data.source || '—';
+  document.getElementById('tickVal').textContent         = data.tick || '—';
+
+  setConfidence(confidence);
+
+  // ── Último estado confiable ──
+  if (confidence >= reliableThreshold) {
+    lastReliableState = motionLevel;
+    lastReliableTime  = new Date();
+    lastReliableConf  = confidence;
+
+    const relEl = document.getElementById('reliableEstado');
+    relEl.textContent = STATE_ES[motionLevel] || motionLevel.toUpperCase();
+    relEl.className   = 'estado-value ' + motionLevel;
+
+    document.getElementById('reliableSubtitle').textContent  = STATE_SUBTITLE[motionLevel] || '';
+    document.getElementById('reliableHora').textContent      = lastReliableTime.toTimeString().slice(0, 8);
+    document.getElementById('reliableConf').textContent      = (confidence * 100).toFixed(1) + '%';
+    document.getElementById('reliableUmbral').textContent    = Math.round(reliableThreshold * 100) + '%';
+
+    const card = document.getElementById('reliableCard');
+    if (card) card.style.borderColor = 'rgba(34,197,94,0.4)';
+  }
+
+  // ── Sección 2: Señal CSI ──
+  setBar('barMotion',   'valMotion',   feats.motion_band_power     || 0, 150);
+  setBar('barBreath',   'valBreath',   feats.breathing_band_power  || 0, 120);
+  setBar('barSpectral', 'valSpectral', feats.spectral_power        || 0, 250);
+  setBar('barVariance', 'valVariance', feats.variance              || 0, 200);
+
+  document.getElementById('sigFreq').textContent      = (feats.dominant_freq_hz || 0).toFixed(2) + ' Hz';
+  document.getElementById('sigChangePts').textContent = feats.change_points || 0;
+  document.getElementById('sigRSSI').textContent      = feats.mean_rssi ? feats.mean_rssi.toFixed(1) + ' dBm' : '— dBm';
+
+  const sqClass = sq > 0.5 ? 'good' : sq > 0.3 ? 'medium' : 'poor';
+  document.getElementById('sigQual').textContent  = sq.toFixed(3);
+  document.getElementById('sigQual').className    = 'signal-val ' + sqClass;
+  document.getElementById('sigNodos').textContent = nfeats.length + ' / 4';
+
+  // ── Sección 3: Signos vitales ──
+  const br = vitals.breathing_rate_bpm || 0;
+  const hr = vitals.heart_rate_bpm     || 0;
+  const bc = vitals.breathing_confidence || 0;
+  const hc = vitals.heartbeat_confidence || 0;
+
+  const bColor = statusColor(br, 12, 20);
+  const hColor = statusColor(hr, 60, 100);
+
+  document.getElementById('breathVal').textContent      = br > 0 ? br.toFixed(1) : '—';
+  document.getElementById('heartVal').textContent       = hr > 0 ? hr.toFixed(1) : '—';
+  document.getElementById('breathVal').style.color      = br > 0 ? bColor : '#64748B';
+  document.getElementById('heartVal').style.color       = hr > 0 ? hColor : '#64748B';
+  document.getElementById('breathConfBar').style.width  = (bc * 100) + '%';
+  document.getElementById('heartConfBar').style.width   = (hc * 100) + '%';
+  document.getElementById('breathConfBar').style.background = br > 0 ? bColor : '#64748B';
+  document.getElementById('heartConfBar').style.background  = hr > 0 ? hColor : '#64748B';
+  document.getElementById('breathConfVal').textContent  = Math.round(bc * 100) + '%';
+  document.getElementById('heartConfVal').textContent   = Math.round(hc * 100) + '%';
+  document.getElementById('breathRange').style.color    = br > 0 ? bColor : '#64748B';
+  document.getElementById('heartRange').style.color     = hr > 0 ? hColor : '#64748B';
+
+  document.getElementById('breathStatus').textContent = breathStatusText(br);
+  document.getElementById('breathStatus').style.color  = br > 0 ? bColor : '#64748B';
+  document.getElementById('heartStatus').textContent  = heartStatusText(hr);
+  document.getElementById('heartStatus').style.color   = hr > 0 ? hColor : '#64748B';
+
+  // ── Último valor confiable — Respiración ──
+  if (br > 0 && bc >= breathReliableThreshold) {
+    lastBreathReliable = { value: br, time: new Date(), conf: bc };
+    const bEl = document.getElementById('reliableBreathVal');
+    bEl.textContent  = br.toFixed(1);
+    bEl.style.color  = bColor;
+    document.getElementById('reliableBreathStatus').textContent = breathStatusText(br);
+    document.getElementById('reliableBreathStatus').style.color = bColor;
+    document.getElementById('reliableBreathHora').textContent   = lastBreathReliable.time.toTimeString().slice(0, 8);
+    document.getElementById('reliableBreathConf').textContent   = (bc * 100).toFixed(1) + '%';
+    document.getElementById('reliableBreathConf').style.color   = '#22C55E';
+  }
+
+  // ── Último valor confiable — Cardíaca ──
+  if (hr > 0 && hc >= heartReliableThreshold) {
+    lastHeartReliable = { value: hr, time: new Date(), conf: hc };
+    const hEl = document.getElementById('reliableHeartVal');
+    hEl.textContent  = hr.toFixed(1);
+    hEl.style.color  = hColor;
+    document.getElementById('reliableHeartStatus').textContent = heartStatusText(hr);
+    document.getElementById('reliableHeartStatus').style.color = hColor;
+    document.getElementById('reliableHeartHora').textContent   = lastHeartReliable.time.toTimeString().slice(0, 8);
+    document.getElementById('reliableHeartConf').textContent   = (hc * 100).toFixed(1) + '%';
+    document.getElementById('reliableHeartConf').style.color   = '#22C55E';
+  }
+
+  const asig     = calcAsignacion(personCount, confidence, sq);
+  const asigLabel = asig === 'ambigua'
+    ? 'ambigua (' + personCount + ')'
+    : { sin_persona: 'sin persona', directa: 'asignación directa', baja_confianza: 'baja confianza' }[asig];
+  document.getElementById('sigAsignacion').textContent = asigLabel;
+  document.getElementById('nodeCount').textContent =
+    nfeats.length <= 1 ? '1 nodo: sobreestima personas' :
+    nfeats.length <= 3 ? nfeats.length + ' nodos: confianza moderada' :
+                         '4 nodos: alta precisión';
+
+  // ── Sección 4: Tracking ──
+  document.getElementById('personasCount').textContent = personCount;
+  document.getElementById('personasIds').innerHTML = persons.map(p =>
+    `<div class="persona-tag">#${p.id}</div>`).join('');
+  renderPersonIcons(persons);
+
+  const asigBadge = document.getElementById('asignacionBadge');
+  asigBadge.className   = 'asignacion-badge ' + asig;
+  asigBadge.textContent = asigLabel;
+
+  document.getElementById('trackConf').textContent = (confidence * 100).toFixed(1) + '%';
+  document.getElementById('trackSQ').textContent   = sq.toFixed(3);
+  document.getElementById('trackConf').className   = 'signal-val ' + (confidence > 0.6 ? 'good' : confidence > 0.3 ? 'medium' : 'poor');
+  document.getElementById('trackSQ').className     = 'signal-val ' + sqClass;
+
+  // ── Sección 5: Nodos ──
+  updateNodos(nfeats);
+
+  // ── Historiales ──
+  breathHistory.push(br);
+  heartHistory.push(hr);
+  presHistory.push(motionLevel);
+  if (breathHistory.length > MAX_HIST) breathHistory.shift();
+  if (heartHistory.length  > MAX_HIST) heartHistory.shift();
+  if (presHistory.length   > MAX_HIST) presHistory.shift();
+
+  drawWave('breathCanvas', breathHistory, '#22C55E');
+  drawWave('heartCanvas',  heartHistory,  '#86EFAC');
+  drawHistorial();
+
+  // ── Ticker ──
+  document.getElementById('tEstado').textContent   = STATE_ES[motionLevel] || motionLevel;
+  document.getElementById('tNodo').textContent     = nfeats.length + ' activos';
+  document.getElementById('tMotion').textContent   = (feats.motion_band_power || 0).toFixed(1);
+  document.getElementById('tBreath').textContent   = br > 0 ? br.toFixed(1) + ' RPM' : '—';
+  document.getElementById('tHeart').textContent    = hr > 0 ? hr.toFixed(1) + ' BPM' : '—';
+  document.getElementById('tVariance').textContent = (feats.variance || 0).toFixed(1);
+  document.getElementById('tPersonas').textContent = personCount;
+}
+
+// ── WebSocket ──────────────────────────────────────────────────
+function connect() {
+  const badge = document.getElementById('connBadge');
+  const text  = document.getElementById('connText');
+  badge.className  = 'connection-badge connecting';
+  text.textContent = 'Conectando...';
+
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    badge.className  = 'connection-badge connected';
+    text.textContent = 'Conectado · ESP32';
+  };
+
+  let lastUpdate = 0;
+
+  ws.onmessage = e => {
+    try {
+      const now = Date.now();
+      if (now - lastUpdate >= updateIntervalMs) {
+        updateDashboard(JSON.parse(e.data));
+        lastUpdate = now;
+      }
+    } catch(err) {}
+  };
+
+  ws.onclose = () => {
+    badge.className  = 'connection-badge disconnected';
+    text.textContent = 'Desconectado';
+    setTimeout(connect, 3000);
+  };
+
+  ws.onerror = () => {
+    badge.className  = 'connection-badge disconnected';
+    text.textContent = 'Error de conexión';
+  };
+}
+
+connect();
+
+// Contador de tiempo desde última medición confiable
+setInterval(() => {
+  const el = document.getElementById('reliableAgo');
+  if (!el) return;
+  if (!lastReliableTime) { el.textContent = '—'; return; }
+  const secs = Math.floor((Date.now() - lastReliableTime.getTime()) / 1000);
+  const mins  = Math.floor(secs / 60);
+  el.textContent = mins > 0 ? `${mins}m ${secs % 60}s` : `${secs}s`;
+  el.style.color = secs > 60 ? '#EF4444' : secs > 30 ? '#EAB308' : '#FDBA74';
+}, 1000);
+
+// Contadores de tiempo — vitales confiables
+setInterval(() => {
+  function agoText(el, lastObj) {
+    if (!el) return;
+    if (!lastObj) { el.textContent = '—'; el.style.color = '#FDBA74'; return; }
+    const secs = Math.floor((Date.now() - lastObj.time.getTime()) / 1000);
+    const mins  = Math.floor(secs / 60);
+    el.textContent = mins > 0 ? `${mins}m ${secs % 60}s` : `${secs}s`;
+    el.style.color = secs > 60 ? '#EF4444' : secs > 30 ? '#EAB308' : '#FDBA74';
+  }
+  agoText(document.getElementById('reliableBreathAgo'), lastBreathReliable);
+  agoText(document.getElementById('reliableHeartAgo'),  lastHeartReliable);
+}, 1000);
+
+window.addEventListener('resize', () => {
+  drawWave('breathCanvas', breathHistory, '#22C55E');
+  drawWave('heartCanvas',  heartHistory,  '#86EFAC');
+  drawHistorial();
+});
+</script>
+</body>
+</html>
