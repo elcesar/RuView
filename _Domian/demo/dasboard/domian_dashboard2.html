@@ -649,7 +649,7 @@ main {
       <div class="section-module">vital_signs{}</div>
     </div>
 
-    <div class="sgrid sgrid-3">
+    <div class="sgrid sgrid-2">
 
       <!-- Respiración -->
       <div class="card accent-vital vital-card">
@@ -689,36 +689,10 @@ main {
         <div class="vital-waveform"><canvas id="heartCanvas"></canvas></div>
       </div>
 
-      <!-- Interpretación -->
-      <div class="card accent-vital">
-        <div class="card-label" style="color:var(--green);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Interpretación clínica
-        </div>
-        <div class="signal-rows">
-          <div class="signal-row">
-            <div class="signal-key">Estado respiratorio</div>
-            <div class="signal-val" id="breathStatus" style="color:var(--slate);">—</div>
-          </div>
-          <div class="signal-row">
-            <div class="signal-key">Estado cardíaco</div>
-            <div class="signal-val" id="heartStatus" style="color:var(--slate);">—</div>
-          </div>
-          <div class="signal-row">
-            <div class="signal-key">Asignación vitales</div>
-            <div class="signal-val" id="sigAsignacion">—</div>
-          </div>
-          <div class="signal-row" style="margin-top:0.3rem;">
-            <div class="signal-key">Limitación</div>
-            <div class="signal-val" id="nodeCount" style="font-size:0.6rem;color:var(--slate);">—</div>
-          </div>
-        </div>
-      </div>
-
     </div>
 
     <!-- Fila 2: últimos vitales confiables -->
-    <div class="sgrid sgrid-2" style="margin-top:0.9rem;">
+    <div class="sgrid sgrid-3" style="margin-top:0.9rem;">
 
       <!-- Último valor confiable — Respiración -->
       <div class="card accent-vital">
@@ -788,6 +762,32 @@ main {
           <div style="text-align:center;border-left:1px solid rgba(255,255,255,0.05);padding-left:1rem;min-width:68px;">
             <div style="font-size:0.55rem;color:var(--slate);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem;">Hace</div>
             <div id="reliableHeartAgo" style="font-family:'Syne Mono',monospace;font-size:1.6rem;font-weight:800;color:var(--amber);line-height:1;">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interpretación clínica — basada en últimos valores confiables -->
+      <div class="card accent-vital">
+        <div class="card-label" style="color:var(--green);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Interpretación clínica
+        </div>
+        <div class="signal-rows">
+          <div class="signal-row">
+            <div class="signal-key">Estado respiratorio</div>
+            <div class="signal-val" id="breathStatus" style="color:var(--slate);">—</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">Estado cardíaco</div>
+            <div class="signal-val" id="heartStatus" style="color:var(--slate);">—</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-key">Asignación vitales</div>
+            <div class="signal-val" id="sigAsignacion">—</div>
+          </div>
+          <div class="signal-row" style="margin-top:0.3rem;">
+            <div class="signal-key">Limitación</div>
+            <div class="signal-val" id="nodeCount" style="font-size:0.6rem;color:var(--slate);">—</div>
           </div>
         </div>
       </div>
@@ -1277,10 +1277,6 @@ function updateDashboard(data) {
   document.getElementById('breathRange').style.color    = br > 0 ? bColor : '#64748B';
   document.getElementById('heartRange').style.color     = hr > 0 ? hColor : '#64748B';
 
-  document.getElementById('breathStatus').textContent = breathStatusText(br);
-  document.getElementById('breathStatus').style.color  = br > 0 ? bColor : '#64748B';
-  document.getElementById('heartStatus').textContent  = heartStatusText(hr);
-  document.getElementById('heartStatus').style.color   = hr > 0 ? hColor : '#64748B';
 
   // ── Último valor confiable — Respiración ──
   if (br > 0 && bc >= breathReliableThreshold) {
@@ -1293,6 +1289,9 @@ function updateDashboard(data) {
     document.getElementById('reliableBreathHora').textContent   = lastBreathReliable.time.toTimeString().slice(0, 8);
     document.getElementById('reliableBreathConf').textContent   = (bc * 100).toFixed(1) + '%';
     document.getElementById('reliableBreathConf').style.color   = '#22C55E';
+    // Actualizar interpretación clínica con el valor confiable
+    document.getElementById('breathStatus').textContent = breathStatusText(br);
+    document.getElementById('breathStatus').style.color  = bColor;
   }
 
   // ── Último valor confiable — Cardíaca ──
@@ -1306,6 +1305,9 @@ function updateDashboard(data) {
     document.getElementById('reliableHeartHora').textContent   = lastHeartReliable.time.toTimeString().slice(0, 8);
     document.getElementById('reliableHeartConf').textContent   = (hc * 100).toFixed(1) + '%';
     document.getElementById('reliableHeartConf').style.color   = '#22C55E';
+    // Actualizar interpretación clínica con el valor confiable
+    document.getElementById('heartStatus').textContent = heartStatusText(hr);
+    document.getElementById('heartStatus').style.color  = hColor;
   }
 
   const asig     = calcAsignacion(personCount, confidence, sq);
