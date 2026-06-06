@@ -5,7 +5,7 @@ import requests
 from datetime import datetime
 
 WS_URL             = "ws://192.168.0.8:8765/ws/sensing"
-HA_URL             = "http://192.168.0.17:8123"
+HA_URL             = "http://192.168.0.18:8123"
 WEBHOOK            = "domian_presencia"
 WEBHOOK_ALEXA      = "alexa_presencia"
 
