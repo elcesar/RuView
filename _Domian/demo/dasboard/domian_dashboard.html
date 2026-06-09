@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOMIAN — WiFi Sensing Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=Syne:wght@400;500;700&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:   #1C1C1E;
+  --dark:    #3A3A3C;
+  --orange:  #F97316;
+  --amber:   #FDBA74;
+  --slate:   #64748B;
+  --cream:   #FFF7ED;
+  --white:   #FFFFFF;
+  --green:   #22C55E;
+  --red:     #EF4444;
+  --yellow:  #EAB308;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--black);
+  color: var(--cream);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Circuit pattern background ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Header ── */
+header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid rgba(249,115,22,0.2);
+  background: rgba(28,28,30,0.95);
+  backdrop-filter: blur(12px);
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-svg {
+  width: 48px;
+  height: 48px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--white);
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.brand-tagline {
+  font-size: 0.65rem;
+  color: var(--orange);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.connection-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(249,115,22,0.3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+
+.connection-badge.connected {
+  background: rgba(34,197,94,0.1);
+  border-color: rgba(34,197,94,0.4);
+  color: var(--green);
+}
+
+.connection-badge.disconnected {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.4);
+  color: var(--red);
+}
+
+.connection-badge.connecting {
+  background: rgba(234,179,8,0.1);
+  border-color: rgba(234,179,8,0.4);
+  color: var(--yellow);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.dot.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.clock {
+  font-family: 'Syne Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--slate);
+  letter-spacing: 0.05em;
+}
+
+/* ── Main layout ── */
+main {
+  position: relative;
+  z-index: 1;
+  padding: 1.5rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── Cards base ── */
+.card {
+  background: rgba(58,58,60,0.4);
+  border: 1px solid rgba(249,115,22,0.15);
+  border-radius: 12px;
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.card:hover {
+  border-color: rgba(249,115,22,0.35);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.card:hover::before { opacity: 1; }
+
+.card-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--slate);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-label svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.7;
+}
+
+/* ── Presencia card (span 3) ── */
+.card-presencia {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.5rem 2rem;
+}
+
+.presencia-estado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.estado-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--slate);
+  font-weight: 600;
+}
+
+.estado-value {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: color 0.5s;
+  line-height: 1;
+}
+
+.estado-value.present_moving  { color: var(--orange); }
+.estado-value.present_still   { color: var(--amber); }
+.estado-value.active          { color: #FF6B35; }
+.estado-value.absent          { color: var(--slate); }
+.estado-value.unknown         { color: var(--dark); }
+
+.presencia-bar {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bar-name {
+  font-size: 0.7rem;
+  color: var(--slate);
+  width: 110px;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+
+.bar-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+.bar-fill.motion   { background: var(--orange); }
+.bar-fill.breath   { background: var(--amber); }
+.bar-fill.spectral { background: var(--slate); }
+
+.bar-val {
+  font-family: 'Syne Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--cream);
+  width: 45px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.presencia-conf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.conf-ring {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.conf-ring svg {
+  transform: rotate(-90deg);
+  width: 80px;
+  height: 80px;
+}
+
+.conf-circle-bg {
+  fill: none;
+  stroke: rgba(255,255,255,0.05);
+  stroke-width: 6;
+}
+
+.conf-circle-fill {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+
+.conf-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--cream);
+}
+
+.conf-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+/* ── Vitales cards ── */
+.card-vital {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vital-main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.vital-number {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--orange);
+  line-height: 1;
+  transition: color 0.3s;
+}
+
+.vital-unit {
+  font-size: 0.8rem;
+  color: var(--slate);
+  font-weight: 500;
+}
+
+.vital-conf {
+  font-size: 0.7rem;
+  color: var(--slate);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.vital-conf-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.vital-conf-fill {
+  height: 100%;
+  background: var(--orange);
+  border-radius: 2px;
+  transition: width 0.5s;
+}
+
+.vital-waveform {
+  height: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.vital-waveform canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Señal quality ── */
+.card-signal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.signal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+.signal-key {
+  color: var(--slate);
+  letter-spacing: 0.05em;
+}
+
+.signal-val {
+  font-family: 'Syne Mono', monospace;
+  color: var(--cream);
+}
+
+.signal-val.good    { color: var(--green); }
+.signal-val.medium  { color: var(--yellow); }
+.signal-val.poor    { color: var(--red); }
+
+/* ── Nodos card (span 2) ── */
+.card-nodos {
+  grid-column: span 2;
+}
+
+.nodos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.nodo-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(249,115,22,0.1);
+  border-radius: 8px;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.nodo-item.active {
+  border-color: rgba(249,115,22,0.4);
+  background: rgba(249,115,22,0.05);
+}
+
+.nodo-item.stale {
+  border-color: rgba(239,68,68,0.3);
+  opacity: 0.5;
+}
+
+.nodo-id {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--orange);
+  line-height: 1;
+}
+
+.nodo-status {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0.2rem 0;
+}
+
+.nodo-status.active   { color: var(--green); }
+.nodo-status.inactive { color: var(--slate); }
+
+.nodo-conf {
+  font-family: 'Syne Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--slate);
+}
+
+/* ── Personas card ── */
+.card-personas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.personas-count {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--orange);
+  line-height: 1;
+}
+
+.personas-ids {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.persona-tag {
+  font-family: 'Syne Mono', monospace;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(249,115,22,0.1);
+  border: 1px solid rgba(249,115,22,0.2);
+  color: var(--amber);
+}
+
+.asignacion-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+  width: fit-content;
+}
+
+.asignacion-badge.directa    { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.asignacion-badge.ambigua    { background: rgba(234,179,8,0.15); color: var(--yellow); border: 1px solid rgba(234,179,8,0.3); }
+.asignacion-badge.sin_persona { background: rgba(100,116,139,0.15); color: var(--slate); border: 1px solid rgba(100,116,139,0.3); }
+.asignacion-badge.baja_confianza { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+
+/* ── Historial chart (span 3) ── */
+.card-historial {
+  grid-column: 1 / -1;
+}
+
+.chart-area {
+  height: 80px;
+  position: relative;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.chart-area canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Ticker bottom ── */
+.ticker {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(28,28,30,0.97);
+  border-top: 1px solid rgba(249,115,22,0.2);
+  padding: 0.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-family: 'Syne Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--slate);
+  overflow: hidden;
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ticker-key { color: var(--orange); }
+.ticker-val { color: var(--cream); }
+
+/* ── Status dot indicator en header ── */
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--orange);
+  font-weight: 600;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  animation: livepulse 1s ease-in-out infinite;
+}
+
+@keyframes livepulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(249,115,22,0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(249,115,22,0); }
+}
+
+.tick-counter {
+  font-family: 'Syne Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--slate);
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo-area">
+    <img src="domian_isotipo.svg" class="logo-svg" alt="DOMIAN logo">
+    <div class="brand-text">
+      <div class="brand-name">DOMIAN</div>
+      <div class="brand-tagline">WiFi Sensing · Fase 1</div>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      EN VIVO
+    </div>
+    <div class="connection-badge connecting" id="connBadge">
+      <div class="dot pulse" id="connDot"></div>
+      <span id="connText">Conectando</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.6rem;">
+      <span style="font-size:0.65rem;color:var(--slate);letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;">Refresco</span>
+      <input type="range" id="refreshSlider" min="100" max="5000" step="100" value="500"
+        style="width:80px;accent-color:var(--orange);cursor:pointer;"
+        oninput="updateIntervalMs=+this.value; document.getElementById('refreshLabel').textContent=(this.value>=1000?(this.value/1000).toFixed(1)+'s':this.value+'ms')">
+      <span style="font-family:'Syne Mono',monospace;font-size:0.7rem;color:var(--amber);min-width:36px;" id="refreshLabel">500ms</span>
+    </div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- PRESENCIA (span 3) -->
+  <div class="card card-presencia">
+    <div class="presencia-estado">
+      <div class="estado-label">Estado de presencia</div>
+      <div class="estado-value absent" id="estadoValue">ABSENT</div>
+      <div style="font-size:0.7rem; color:var(--slate); margin-top:0.3rem;" id="presenciaConfiable">—</div>
+    </div>
+
+    <div class="presencia-bar">
+      <div class="bar-row">
+        <div class="bar-name">Motion band</div>
+        <div class="bar-track"><div class="bar-fill motion" id="barMotion" style="width:0%"></div></div>
+        <div class="bar-val" id="valMotion">0.0</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Breathing band</div>
+        <div class="bar-track"><div class="bar-fill breath" id="barBreath" style="width:0%"></div></div>
+        <div class="bar-val" id="valBreath">0.0</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Spectral power</div>
+        <div class="bar-track"><div class="bar-fill spectral" id="barSpectral" style="width:0%"></div></div>
+        <div class="bar-val" id="valSpectral">0.0</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Variance</div>
+        <div class="bar-track"><div class="bar-fill" style="background:var(--slate);transition:width 0.6s;" id="barVariance" style="width:0%"></div></div>
+        <div class="bar-val" id="valVariance">0.0</div>
+      </div>
+    </div>
+
+    <div class="presencia-conf">
+      <div class="conf-ring">
+        <svg viewBox="0 0 80 80">
+          <circle class="conf-circle-bg" cx="40" cy="40" r="35"/>
+          <circle class="conf-circle-fill" id="confCircle" cx="40" cy="40" r="35"/>
+        </svg>
+        <div class="conf-text" id="confText">0%</div>
+      </div>
+      <div class="conf-label">Confianza</div>
+    </div>
+
+    <div style="text-align:right; margin-left:1rem;">
+      <div class="tick-counter">Tick</div>
+      <div style="font-family:'Syne Mono',monospace; font-size:1rem; color:var(--orange);" id="tickVal">—</div>
+      <div class="tick-counter" style="margin-top:0.5rem;">Frames</div>
+      <div style="font-family:'Syne Mono',monospace; font-size:1rem; color:var(--amber);" id="frameCount">0</div>
+    </div>
+  </div>
+
+  <!-- RESPIRACION -->
+  <div class="card card-vital">
+    <div class="card-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 12h8M12 8v8"/></svg>
+      Respiración
+    </div>
+    <div class="vital-main">
+      <div class="vital-number" id="breathVal">—</div>
+      <div class="vital-unit">RPM</div>
+    </div>
+    <div class="vital-conf">
+      <span>Confianza</span>
+      <div class="vital-conf-bar"><div class="vital-conf-fill" id="breathConfBar" style="width:0%"></div></div>
+      <span id="breathConfVal">0%</span>
+    </div>
+    <div style="font-size:0.65rem; color:var(--slate); margin-top:0.25rem;" id="breathRange">Normal: 12–20 RPM</div>
+    <div class="vital-waveform">
+      <canvas id="breathCanvas"></canvas>
+    </div>
+  </div>
+
+  <!-- PULSO -->
+  <div class="card card-vital">
+    <div class="card-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Frecuencia cardíaca
+    </div>
+    <div class="vital-main">
+      <div class="vital-number" id="heartVal">—</div>
+      <div class="vital-unit">BPM</div>
+    </div>
+    <div class="vital-conf">
+      <span>Confianza</span>
+      <div class="vital-conf-bar"><div class="vital-conf-fill" id="heartConfBar" style="width:0%"></div></div>
+      <span id="heartConfVal">0%</span>
+    </div>
+    <div style="font-size:0.65rem; color:var(--slate); margin-top:0.25rem;" id="heartRange">Normal: 60–100 BPM</div>
+    <div class="vital-waveform">
+      <canvas id="heartCanvas"></canvas>
+    </div>
+  </div>
+
+  <!-- SEÑAL -->
+  <div class="card card-signal">
+    <div class="card-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6l7 7 4-4 6 6 5-5"/></svg>
+      Calidad de señal
+    </div>
+    <div class="signal-row">
+      <div class="signal-key">Signal quality</div>
+      <div class="signal-val" id="sigQual">—</div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-key">Nodos activos</div>
+      <div class="signal-val" id="sigNodos">—</div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-key">Freq. dominante</div>
+      <div class="signal-val" id="sigFreq">—</div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-key">Change points</div>
+      <div class="signal-val" id="sigChangePts">—</div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-key">Asignación vitales</div>
+      <div class="signal-val" id="sigAsignacion">—</div>
+    </div>
+  </div>
+
+  <!-- NODOS (span 2) -->
+  <div class="card card-nodos" style="grid-column: span 2;">
+    <div class="card-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      Estado de nodos ESP32-S3
+    </div>
+    <div class="nodos-grid" id="nodosGrid">
+      <div class="nodo-item" id="nodo1"><div class="nodo-id">N1</div><div class="nodo-status inactive">inactivo</div><div class="nodo-conf">—</div></div>
+      <div class="nodo-item" id="nodo2"><div class="nodo-id">N2</div><div class="nodo-status inactive">inactivo</div><div class="nodo-conf">—</div></div>
+      <div class="nodo-item" id="nodo3"><div class="nodo-id">N3</div><div class="nodo-status inactive">inactivo</div><div class="nodo-conf">—</div></div>
+      <div class="nodo-item" id="nodo4"><div class="nodo-id">N4</div><div class="nodo-status inactive">inactivo</div><div class="nodo-conf">—</div></div>
+    </div>
+  </div>
+
+  <!-- PERSONAS -->
+  <div class="card card-personas">
+    <div class="card-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Personas detectadas
+    </div>
+    <div class="personas-count" id="personasCount">0</div>
+    <div class="personas-ids" id="personasIds"></div>
+    <div class="asignacion-badge sin_persona" id="asignacionBadge">sin persona</div>
+  </div>
+
+  <!-- HISTORIAL (span 3) -->
+  <div class="card card-historial">
+    <div class="card-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Historial de presencia — últimos 120 frames
+    </div>
+    <div class="chart-area">
+      <canvas id="historialCanvas"></canvas>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── TICKER ── -->
+<div class="ticker" id="ticker">
+  <div class="ticker-item"><span class="ticker-key">DOMIAN</span><span class="ticker-val">WiFi Sensing v1.0</span></div>
+  <div class="ticker-item"><span class="ticker-key">NODO</span><span class="ticker-val" id="tNodo">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">MOTION</span><span class="ticker-val" id="tMotion">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">BREATH</span><span class="ticker-val" id="tBreath">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">HEART</span><span class="ticker-val" id="tHeart">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">VARIANCE</span><span class="ticker-val" id="tVariance">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">SPECTRAL</span><span class="ticker-val" id="tSpectral">—</span></div>
+  <div class="ticker-item"><span class="ticker-key">PERSONAS</span><span class="ticker-val" id="tPersonas">—</span></div>
+</div>
+
+<script>
+const WS_URL = 'ws://192.168.0.8:8765/ws/sensing';
+const MAX_HIST = 120;
+
+let frameCount = 0;
+let breathHistory = [];
+let heartHistory  = [];
+let presHistory   = [];
+let ws = null;
+
+// ── Clock ──────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toTimeString().slice(0,8);
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Waveform canvas ────────────────────────────────────────────
+function drawWave(canvasId, history, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (history.length < 2) return;
+  const min = Math.min(...history);
+  const max = Math.max(...history) || 1;
+  const range = max - min || 1;
+
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 4;
+
+  history.forEach((v, i) => {
+    const x = (i / (history.length - 1)) * canvas.width;
+    const y = canvas.height - ((v - min) / range) * canvas.height * 0.85 - canvas.height * 0.075;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+// ── Historial canvas ───────────────────────────────────────────
+function drawHistorial() {
+  const canvas = document.getElementById('historialCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (presHistory.length < 2) return;
+
+  const w = canvas.width;
+  const h = canvas.height;
+
+  presHistory.forEach((v, i) => {
+    const x = (i / MAX_HIST) * w;
+    const bw = w / MAX_HIST + 1;
+    const color =
+      v === 'present_moving' ? '#F97316' :
+      v === 'present_still'  ? '#FDBA74' :
+      v === 'active'         ? '#FF6B35' :
+      v === 'absent'         ? '#3A3A3C' : '#1C1C1E';
+    ctx.fillStyle = color;
+    ctx.fillRect(x, 0, bw, h);
+  });
+
+  // Leyenda
+  const items = [
+    { color: '#F97316', label: 'moving' },
+    { color: '#FDBA74', label: 'still' },
+    { color: '#FF6B35', label: 'active' },
+    { color: '#3A3A3C', label: 'absent' },
+  ];
+  let lx = 8;
+  items.forEach(it => {
+    ctx.fillStyle = it.color;
+    ctx.fillRect(lx, h - 18, 10, 10);
+    ctx.fillStyle = '#64748B';
+    ctx.font = '9px Syne Mono, monospace';
+    ctx.fillText(it.label, lx + 13, h - 9);
+    lx += 60;
+  });
+}
+
+// ── Confidence ring ────────────────────────────────────────────
+function setConfidence(val) {
+  const circ = document.getElementById('confCircle');
+  const text = document.getElementById('confText');
+  const circumference = 2 * Math.PI * 35;
+  const offset = circumference * (1 - val);
+  circ.style.strokeDashoffset = offset;
+  text.textContent = Math.round(val * 100) + '%';
+  const hue = val > 0.6 ? '#F97316' : val > 0.3 ? '#EAB308' : '#64748B';
+  circ.style.stroke = hue;
+}
+
+// ── Bar update ─────────────────────────────────────────────────
+function setBar(barId, valId, value, max) {
+  const pct = Math.min(100, (value / max) * 100);
+  document.getElementById(barId).style.width = pct + '%';
+  document.getElementById(valId).textContent = value.toFixed(1);
+}
+
+// ── Nodos update ───────────────────────────────────────────────
+function updateNodos(nodeFeatures) {
+  const allIds = [1, 2, 3, 4];
+  allIds.forEach(id => {
+    const el = document.getElementById('nodo' + id);
+    const nf = nodeFeatures.find(n => n.node_id === id);
+    if (!el) return;
+    if (nf) {
+      const stale = nf.stale;
+      el.className = 'nodo-item ' + (stale ? 'stale' : 'active');
+      el.querySelector('.nodo-status').className = 'nodo-status ' + (stale ? 'inactive' : 'active');
+      el.querySelector('.nodo-status').textContent = stale ? 'stale' : nf.classification?.motion_level?.replace('_', ' ') || 'activo';
+      el.querySelector('.nodo-conf').textContent = Math.round((nf.classification?.confidence || 0) * 100) + '%';
+    } else {
+      el.className = 'nodo-item';
+      el.querySelector('.nodo-status').className = 'nodo-status inactive';
+      el.querySelector('.nodo-status').textContent = 'inactivo';
+      el.querySelector('.nodo-conf').textContent = '—';
+    }
+  });
+}
+
+// ── Asignacion badge ───────────────────────────────────────────
+function updateAsignacion(personCount, confidence, sq) {
+  const badge = document.getElementById('asignacionBadge');
+  let tipo, label;
+  if (personCount === 0) { tipo = 'sin_persona'; label = 'sin persona'; }
+  else if (personCount === 1 && confidence > 0.5 && sq > 0.3) { tipo = 'directa'; label = 'asignacion directa'; }
+  else if (personCount > 1) { tipo = 'ambigua'; label = 'ambigua (' + personCount + ' personas)'; }
+  else { tipo = 'baja_confianza'; label = 'baja confianza'; }
+  badge.className = 'asignacion-badge ' + tipo;
+  badge.textContent = label;
+  return tipo;
+}
+
+// ── Main update ────────────────────────────────────────────────
+function updateDashboard(data) {
+  frameCount++;
+  document.getElementById('frameCount').textContent = frameCount;
+
+  const clf    = data.classification || {};
+  const feats  = data.features || {};
+  const vitals = data.vital_signs || {};
+  const persons = data.persons || [];
+  const nfeats  = data.node_features || [];
+
+  const motionLevel = clf.motion_level || 'unknown';
+  const confidence  = clf.confidence || 0;
+  const sq          = vitals.signal_quality || 0;
+  const personCount = persons.length;
+
+  // Estado
+  const estadoEl = document.getElementById('estadoValue');
+  estadoEl.textContent = motionLevel.toUpperCase().replace('_', ' ');
+  estadoEl.className = 'estado-value ' + motionLevel;
+
+  const confiable = clf.presence && confidence > 0.5 && sq > 0.3;
+  document.getElementById('presenciaConfiable').textContent =
+    confiable ? '✓ Presencia confiable' : '· Baja confianza — calibrando';
+  document.getElementById('presenciaConfiable').style.color = confiable ? '#22C55E' : '#64748B';
+
+  // Tick
+  document.getElementById('tickVal').textContent = data.tick || '—';
+
+  // Confidence ring
+  setConfidence(confidence);
+
+  // Barras
+  setBar('barMotion',   'valMotion',   feats.motion_band_power || 0,  150);
+  setBar('barBreath',   'valBreath',   feats.breathing_band_power || 0, 120);
+  setBar('barSpectral', 'valSpectral', feats.spectral_power || 0,      250);
+  document.getElementById('barVariance').style.width =
+    Math.min(100, ((feats.variance || 0) / 150) * 100) + '%';
+  document.getElementById('valVariance').textContent = (feats.variance || 0).toFixed(1);
+
+  // Vitales
+  const br = vitals.breathing_rate_bpm || 0;
+  const hr = vitals.heart_rate_bpm || 0;
+  const bc = vitals.breathing_confidence || 0;
+  const hc = vitals.heartbeat_confidence || 0;
+
+  document.getElementById('breathVal').textContent = br > 0 ? br.toFixed(1) : '—';
+  document.getElementById('heartVal').textContent  = hr > 0 ? hr.toFixed(1) : '—';
+  document.getElementById('breathConfBar').style.width = (bc * 100) + '%';
+  document.getElementById('heartConfBar').style.width  = (hc * 100) + '%';
+  document.getElementById('breathConfVal').textContent = Math.round(bc * 100) + '%';
+  document.getElementById('heartConfVal').textContent  = Math.round(hc * 100) + '%';
+
+  const breathColor = br < 12 ? '#EAB308' : br > 20 ? '#EF4444' : '#22C55E';
+  const heartColor  = hr < 60 ? '#EAB308' : hr > 100 ? '#EF4444' : '#22C55E';
+  document.getElementById('breathVal').style.color = br > 0 ? breathColor : '#64748B';
+  document.getElementById('heartVal').style.color  = hr > 0 ? heartColor  : '#64748B';
+  document.getElementById('breathRange').style.color = breathColor;
+  document.getElementById('heartRange').style.color  = heartColor;
+
+  // Señal
+  const sqClass = sq > 0.5 ? 'good' : sq > 0.3 ? 'medium' : 'poor';
+  document.getElementById('sigQual').textContent = sq.toFixed(3);
+  document.getElementById('sigQual').className = 'signal-val ' + sqClass;
+  document.getElementById('sigNodos').textContent = nfeats.length + ' / 4';
+  document.getElementById('sigFreq').textContent = (feats.dominant_freq_hz || 0).toFixed(2) + ' Hz';
+  document.getElementById('sigChangePts').textContent = feats.change_points || 0;
+
+  const asig = updateAsignacion(personCount, confidence, sq);
+  document.getElementById('sigAsignacion').textContent = asig;
+
+  // Personas
+  document.getElementById('personasCount').textContent = personCount;
+  const idsEl = document.getElementById('personasIds');
+  idsEl.innerHTML = persons.map(p =>
+    `<div class="persona-tag">#${p.id}</div>`
+  ).join('');
+
+  // Nodos
+  updateNodos(nfeats);
+
+  // Historiales
+  breathHistory.push(br);
+  heartHistory.push(hr);
+  presHistory.push(motionLevel);
+  if (breathHistory.length > MAX_HIST) breathHistory.shift();
+  if (heartHistory.length  > MAX_HIST) heartHistory.shift();
+  if (presHistory.length   > MAX_HIST) presHistory.shift();
+
+  drawWave('breathCanvas', breathHistory, '#FDBA74');
+  drawWave('heartCanvas',  heartHistory,  '#F97316');
+  drawHistorial();
+
+  // Ticker
+  document.getElementById('tNodo').textContent     = nfeats.length + ' activos';
+  document.getElementById('tMotion').textContent   = (feats.motion_band_power || 0).toFixed(1);
+  document.getElementById('tBreath').textContent   = br > 0 ? br.toFixed(1) + ' RPM' : '—';
+  document.getElementById('tHeart').textContent    = hr > 0 ? hr.toFixed(1) + ' BPM' : '—';
+  document.getElementById('tVariance').textContent = (feats.variance || 0).toFixed(1);
+  document.getElementById('tSpectral').textContent = (feats.spectral_power || 0).toFixed(1);
+  document.getElementById('tPersonas').textContent = personCount;
+}
+
+// ── WebSocket ──────────────────────────────────────────────────
+function connect() {
+  const badge = document.getElementById('connBadge');
+  const text  = document.getElementById('connText');
+
+  badge.className = 'connection-badge connecting';
+  text.textContent = 'Conectando...';
+
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    badge.className = 'connection-badge connected';
+    text.textContent = 'Conectado · ESP32';
+  };
+
+  let lastUpdate = 0;
+  let updateIntervalMs = 500;
+
+  ws.onmessage = e => {
+    try {
+      const now = Date.now();
+      if (now - lastUpdate >= updateIntervalMs) {
+        updateDashboard(JSON.parse(e.data));
+        lastUpdate = now;
+      }
+    } catch(err) {}
+  };
+
+  ws.onclose = () => {
+    badge.className = 'connection-badge disconnected';
+    text.textContent = 'Desconectado';
+    setTimeout(connect, 3000);
+  };
+
+  ws.onerror = () => {
+    badge.className = 'connection-badge disconnected';
+    text.textContent = 'Error de conexión';
+  };
+}
+
+connect();
+window.addEventListener('resize', () => {
+  drawWave('breathCanvas', breathHistory, '#FDBA74');
+  drawWave('heartCanvas',  heartHistory,  '#F97316');
+  drawHistorial();
+});
+</script>
+</body>
+</html>

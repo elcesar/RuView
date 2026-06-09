@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="2048" height="2048" shape-rendering="geometricPrecision">
+
+  <!-- Fondo naranja con esquinas redondeadas -->
+  <rect x="0" y="0" width="500" height="500" rx="68" ry="68" fill="#F97316"/>
+
+  <!-- ═══════════════════════════════════════
+       LETRA D  (izquierda, negra, bold)
+  ════════════════════════════════════════ -->
+  <path d="M 44 100 L 44 408 L 172 408 Q 362 408 362 254 Q 362 100 172 100 Z" fill="#1C1C1E"/>
+  <!-- Hueco interior naranja -->
+  <path d="M 100 152 L 100 356 L 168 356 Q 300 356 300 254 Q 300 152 168 152 Z" fill="#F97316"/>
+
+  <!-- ═══════════════════════════════════════
+       CABLES DE CIRCUITO
+       4 trazos que emergen desde la apertura derecha de la D
+       y se curvan hacia la pared izquierda de la casa
+       Los cables salen a ~190–280px en Y, y bajan suavemente hacia la derecha
+  ════════════════════════════════════════ -->
+  <!-- Los cables nacen desde dentro del hueco naranja de la D
+       y terminan con un nodo circular en la fachada de la casa -->
+
+  <!-- Cable 1 — más alto, llega al área del techo/esquina -->
+  <path d="M 268 186 C 300 174, 328 190, 342 222"
+        fill="none" stroke="#1C1C1E" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- Cable 2 -->
+  <path d="M 270 212 C 305 200, 332 222, 344 258"
+        fill="none" stroke="#1C1C1E" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- Cable 3 -->
+  <path d="M 270 238 C 308 228, 334 254, 344 292"
+        fill="none" stroke="#1C1C1E" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- Cable 4 — más bajo -->
+  <path d="M 268 264 C 306 256, 332 282, 340 320"
+        fill="none" stroke="#1C1C1E" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- Nodos en extremos de cables -->
+  <circle cx="342" cy="222" r="6.5" fill="#1C1C1E"/>
+  <circle cx="344" cy="258" r="6.5" fill="#1C1C1E"/>
+  <circle cx="344" cy="292" r="6.5" fill="#1C1C1E"/>
+  <circle cx="340" cy="320" r="6.5" fill="#1C1C1E"/>
+
+  <!-- ═══════════════════════════════════════
+       CASA (lado derecho, integrada con la D)
+  ════════════════════════════════════════ -->
+
+  <!-- Pared principal -->
+  <rect x="330" y="258" width="136" height="150" fill="#1C1C1E"/>
+
+  <!-- Techo triangular — ápice alto, pronunciado -->
+  <polygon points="312,258  466,258  395,152" fill="#1C1C1E"/>
+
+  <!-- VENTANA 2×2 -->
+  <!-- Área naranja de la ventana -->
+  <rect x="338" y="270" width="68" height="62" rx="2" fill="#F97316"/>
+  <!-- Divisor horizontal -->
+  <rect x="338" y="298" width="68" height="6" fill="#1C1C1E"/>
+  <!-- Divisor vertical -->
+  <rect x="369" y="270" width="6" height="62" fill="#1C1C1E"/>
+
+  <!-- PUERTA con módulo domótico -->
+  <!-- Área naranja de la puerta -->
+  <rect x="402" y="312" width="40" height="96" rx="2" fill="#F97316"/>
+  <!-- Marco negro de la puerta -->
+  <rect x="402" y="312" width="40" height="96" rx="2" fill="none" stroke="#1C1C1E" stroke-width="5.5"/>
+  <!-- Módulo interior: rectángulo negro con recuadro naranja y círculo -->
+  <rect x="408" y="326" width="28" height="50" rx="3" fill="#1C1C1E"/>
+  <rect x="411" y="329" width="22" height="44" rx="2" fill="#F97316"/>
+  <circle cx="422" cy="358" r="8.5" fill="#1C1C1E"/>
+  <circle cx="422" cy="358" r="4" fill="#F97316"/>
+
+  <!-- Base/suelo de la casa -->
+  <rect x="328" y="404" width="140" height="10" rx="3" fill="#1C1C1E"/>
+
+  <!-- ═══════════════════════════════════════
+       SEÑAL WIFI — esquina superior derecha
+       Orientada ~45° hacia arriba-derecha
+  ════════════════════════════════════════ -->
+  <!-- Punto base del wifi -->
+  <circle cx="418" cy="118" r="8" fill="#1C1C1E"/>
+
+  <!-- Arco 1 pequeño -->
+  <path d="M 401 104 Q 418 90 435 104"
+        fill="none" stroke="#1C1C1E" stroke-width="9.5" stroke-linecap="round"/>
+
+  <!-- Arco 2 mediano -->
+  <path d="M 386 88 Q 418 66 450 88"
+        fill="none" stroke="#1C1C1E" stroke-width="9.5" stroke-linecap="round"/>
+
+  <!-- Arco 3 grande -->
+  <path d="M 370 72 Q 418 42 466 72"
+        fill="none" stroke="#1C1C1E" stroke-width="9.5" stroke-linecap="round"/>
+
+</svg>
