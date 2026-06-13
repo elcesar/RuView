@@ -873,6 +873,39 @@ main {
     </div>
   </div>
 
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECCIÓN 4B — MAPA 2D DEL DEPTO
+       Módulo: pose/current → bbox (top-N por confidence)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag track">Módulo 4B</div>
+      <div class="section-title">Ubicación en Depto</div>
+      <div class="section-line" style="background: linear-gradient(90deg, rgba(253,186,116,0.25), transparent);"></div>
+      <div class="section-module">pose/current → bbox</div>
+    </div>
+
+    <div class="sgrid sgrid-1">
+      <div class="card accent-track" style="padding:1rem;">
+        <div class="card-label" style="color:var(--amber);margin-bottom:0.75rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Plano del depto 5.7m × 3.5m — top-N personas por confidence
+        </div>
+        <div style="position:relative;width:100%;max-width:560px;margin:0 auto;">
+          <canvas id="mapaDepto" width="560" height="340"
+            style="width:100%;border:1px solid rgba(253,186,116,0.2);border-radius:8px;background:#080d18;">
+          </canvas>
+          <div style="display:flex;gap:1.2rem;margin-top:0.5rem;font-size:0.58rem;color:var(--slate);flex-wrap:wrap;">
+            <span>🟠 Persona (por confidence)</span>
+            <span>🔵 Nodo ESP32-S3</span>
+            <span style="margin-left:auto;color:var(--amber);" id="mapaStatus">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ══════════════════════════════════════════════════════════
        SECCIÓN 5 — INFRAESTRUCTURA ESP32-S3
        Módulo: node_features[]
@@ -1389,7 +1422,9 @@ function connect() {
     try {
       const now = Date.now();
       if (now - lastUpdate >= updateIntervalMs) {
-        updateDashboard(JSON.parse(e.data));
+        const data = JSON.parse(e.data);
+        updateDashboard(data);
+        updateMapa(data);
         lastUpdate = now;
       }
     } catch(err) {}
@@ -1439,6 +1474,144 @@ window.addEventListener('resize', () => {
   drawWave('heartCanvas',  heartHistory,  '#86EFAC');
   drawHistorial();
 });
+// ── Mapa 2D del depto ──────────────────────────────────────────
+const MAPA_CFG = {
+  W: 560, H: 340,
+  PAD: 36,
+  DEPTO_W: 5.7,   // metros
+  DEPTO_H: 3.5,
+  X_MIN: 114,     // rango calibrado coordenada X del servidor
+  X_MAX: 513,
+};
+
+const NODOS_POS = [
+  { id:1, mx:0.0,  my:0.0  },
+  { id:2, mx:0.0,  my:3.5  },
+  { id:3, mx:5.7,  my:3.5  },
+  { id:4, mx:5.7,  my:0.0  },
+];
+
+const PERSONA_COLS = ['#F97316','#38BDF8','#4ADE80','#A78BFA','#FB7185'];
+
+function m2c(mx, my) {
+  const cw = MAPA_CFG.W - MAPA_CFG.PAD * 2;
+  const ch = MAPA_CFG.H - MAPA_CFG.PAD * 2;
+  return {
+    cx: MAPA_CFG.PAD + (mx / MAPA_CFG.DEPTO_W) * cw,
+    cy: MAPA_CFG.PAD + (1 - my / MAPA_CFG.DEPTO_H) * ch
+  };
+}
+
+function bx2m(bx) {
+  const t = Math.max(0, Math.min(1, (bx - MAPA_CFG.X_MIN) / (MAPA_CFG.X_MAX - MAPA_CFG.X_MIN)));
+  return t * MAPA_CFG.DEPTO_W;
+}
+
+function updateMapa(data) {
+  const canvas = document.getElementById('mapaDepto');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const { W, H, PAD } = MAPA_CFG;
+  const cw = W - PAD * 2;
+  const ch = H - PAD * 2;
+
+  // Obtener estimated_persons como límite
+  const pers = data.persons || [];
+  const est  = data.estimated_persons != null ? data.estimated_persons : pers.length;
+
+  // Ordenar por confidence desc y tomar top-N según estimated_persons
+  const topN = [...pers]
+    .filter(p => p.bbox && p.bbox.x)
+    .sort((a, b) => (b.confidence || 0) - (a.confidence || 0))
+    .slice(0, Math.min(est, 5));
+
+  // Fondo
+  ctx.fillStyle = '#080d18';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(253,186,116,0.07)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 6; i++) {
+    const x = PAD + (i / 6) * cw;
+    ctx.beginPath(); ctx.moveTo(x, PAD); ctx.lineTo(x, H - PAD); ctx.stroke();
+  }
+  for (let i = 0; i <= 4; i++) {
+    const y = PAD + (i / 4) * ch;
+    ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y); ctx.stroke();
+  }
+
+  // Borde depto
+  ctx.strokeStyle = 'rgba(253,186,116,0.2)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(PAD, PAD, cw, ch);
+
+  // Etiquetas dimensiones
+  ctx.fillStyle = 'rgba(100,116,139,0.6)';
+  ctx.font = '10px monospace';
+  ctx.fillText('5.7 m', W / 2 - 14, H - 8);
+  ctx.save();
+  ctx.translate(12, H / 2 + 14);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('3.5 m', 0, 0);
+  ctx.restore();
+
+  // Nodos ESP32-S3
+  NODOS_POS.forEach(n => {
+    const { cx, cy } = m2c(n.mx, n.my);
+    // Halo
+    ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(56,189,248,0.08)'; ctx.fill();
+    // Círculo
+    ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(56,189,248,0.15)'; ctx.fill();
+    ctx.strokeStyle = '#38BDF8'; ctx.lineWidth = 1.5; ctx.stroke();
+    // Label
+    ctx.fillStyle = '#38BDF8'; ctx.font = 'bold 8px monospace';
+    ctx.fillText(`N${n.id}`, cx - 5, cy + 3);
+  });
+
+  // Personas top-N por confidence
+  topN.forEach((p, i) => {
+    const mx  = bx2m(p.bbox.x);
+    const my  = MAPA_CFG.DEPTO_H * (0.25 + i * 0.18);
+    const { cx, cy } = m2c(mx, my);
+    const col = PERSONA_COLS[i % PERSONA_COLS.length];
+    const conf = ((p.confidence || 0) * 100).toFixed(0);
+
+    // Halo pulsante
+    ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI * 2);
+    ctx.fillStyle = col + '18'; ctx.fill();
+
+    // Círculo principal
+    ctx.beginPath(); ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+    ctx.fillStyle = col; ctx.fill();
+
+    // ID de track
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 8px monospace';
+    const idStr = `#${String(p.id).slice(-3)}`;
+    ctx.fillText(idStr, cx - ctx.measureText(idStr).width / 2, cy + 3);
+
+    // Posición en metros
+    ctx.fillStyle = col; ctx.font = '8px monospace';
+    ctx.fillText(`${mx.toFixed(1)}m`, cx - 8, cy + 22);
+
+    // Confidence badge
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(cx - 12, cy - 28, 24, 12);
+    ctx.strokeStyle = col; ctx.lineWidth = 0.5;
+    ctx.strokeRect(cx - 12, cy - 28, 24, 12);
+    ctx.fillStyle = col; ctx.font = 'bold 8px monospace';
+    ctx.fillText(`${conf}%`, cx - ctx.measureText(`${conf}%`).width / 2, cy - 19);
+  });
+
+  // Status
+  const statusEl = document.getElementById('mapaStatus');
+  if (statusEl) {
+    statusEl.textContent = `${est} estimada${est !== 1 ? 's' : ''} · mostrando top-${topN.length} por conf`;
+  }
+}
+
 </script>
 </body>
 </html>

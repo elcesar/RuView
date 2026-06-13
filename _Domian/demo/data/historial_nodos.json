@@ -1,0 +1,3724 @@
+[
+  {
+    "timestamp": "2026-06-04T23:04:35.375815",
+    "tick": 88418,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 26.329,
+        "motion_band": 48.39,
+        "breathing_band": 43.11,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.415859",
+    "tick": 88418,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 26.329,
+        "motion_band": 48.39,
+        "breathing_band": 43.11,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.524062",
+    "tick": 88418,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 26.329,
+        "motion_band": 48.39,
+        "breathing_band": 43.11,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.584077",
+    "tick": 88419,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 33.388,
+        "motion_band": 54.46,
+        "breathing_band": 56.868,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.621546",
+    "tick": 88419,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 33.388,
+        "motion_band": 54.46,
+        "breathing_band": 56.868,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.721285",
+    "tick": 88419,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 33.388,
+        "motion_band": 54.46,
+        "breathing_band": 56.868,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.820204",
+    "tick": 88419,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 33.388,
+        "motion_band": 54.46,
+        "breathing_band": 56.868,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.897711",
+    "tick": 88420,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.659,
+        "motion_band": 39.124,
+        "breathing_band": 42.045,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.905318",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.930536",
+    "tick": 88420,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.659,
+        "motion_band": 39.124,
+        "breathing_band": 42.045,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:35.989890",
+    "tick": 88421,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 16,
+        "stale": false,
+        "variance": 17.562,
+        "motion_band": 30.724,
+        "breathing_band": 27.873,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.023259",
+    "tick": 88422,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 26.501,
+        "motion_band": 45.237,
+        "breathing_band": 36.682,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.035510",
+    "tick": 88422,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 26.501,
+        "motion_band": 45.237,
+        "breathing_band": 36.682,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.083738",
+    "tick": 88423,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 26,
+        "stale": false,
+        "variance": 21.259,
+        "motion_band": 34.505,
+        "breathing_band": 37.525,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.119824",
+    "tick": 88423,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 26,
+        "stale": false,
+        "variance": 21.259,
+        "motion_band": 34.505,
+        "breathing_band": 37.525,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.140142",
+    "tick": 88424,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 16,
+        "stale": false,
+        "variance": 24.251,
+        "motion_band": 38.787,
+        "breathing_band": 45.975,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.214585",
+    "tick": 88424,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 16,
+        "stale": false,
+        "variance": 24.251,
+        "motion_band": 38.787,
+        "breathing_band": 45.975,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.315828",
+    "tick": 88424,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 16,
+        "stale": false,
+        "variance": 24.251,
+        "motion_band": 38.787,
+        "breathing_band": 45.975,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.358431",
+    "tick": 88425,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 33.553,
+        "motion_band": 56.216,
+        "breathing_band": 48.768,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.421306",
+    "tick": 88425,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 33.553,
+        "motion_band": 56.216,
+        "breathing_band": 48.768,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.514723",
+    "tick": 88425,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 33.553,
+        "motion_band": 56.216,
+        "breathing_band": 48.768,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.617650",
+    "tick": 88426,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 14.356,
+        "motion_band": 19.864,
+        "breathing_band": 25.76,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.018
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.626620",
+    "tick": 88426,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 14.356,
+        "motion_band": 19.864,
+        "breathing_band": 25.76,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.018
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.713848",
+    "tick": 88427,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 20.319,
+        "motion_band": 35.214,
+        "breathing_band": 34.502,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.728314",
+    "tick": 88427,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 20.319,
+        "motion_band": 35.214,
+        "breathing_band": 34.502,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.813960",
+    "tick": 88427,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 20.319,
+        "motion_band": 35.214,
+        "breathing_band": 34.502,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:36.914866",
+    "tick": 88427,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 20.319,
+        "motion_band": 35.214,
+        "breathing_band": 34.502,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.016785",
+    "tick": 88427,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 20.319,
+        "motion_band": 35.214,
+        "breathing_band": 34.502,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.116852",
+    "tick": 88427,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 20.319,
+        "motion_band": 35.214,
+        "breathing_band": 34.502,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.215259",
+    "tick": 88427,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 20.319,
+        "motion_band": 35.214,
+        "breathing_band": 34.502,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.315986",
+    "tick": 88427,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 20.319,
+        "motion_band": 35.214,
+        "breathing_band": 34.502,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.407758",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.429679",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.439479",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.517257",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.615526",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.724518",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.814880",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:37.925050",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.017907",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.115664",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.222973",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.322205",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.414870",
+    "tick": 88428,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 15.026,
+        "motion_band": 31.293,
+        "breathing_band": 25.612,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.486542",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.498356",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.518126",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.616911",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.737456",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.817156",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:38.921884",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.024029",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.114008",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.214241",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.317788",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.416978",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.520473",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.620398",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.718722",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.815242",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:39.917310",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.016182",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.116657",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.216690",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.316477",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.416339",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.551003",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.615514",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.716643",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.821307",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:40.923191",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.017303",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.115388",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.219747",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.317469",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.416306",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.515538",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.620957",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.722781",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.822519",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:41.921672",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.018101",
+    "tick": 88429,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 20.918,
+        "motion_band": 34.314,
+        "breathing_band": 31.654,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.130236",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.145821",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.154996",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.216516",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.317091",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.422625",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.519244",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.615132",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.725562",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.821901",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:42.917341",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.021535",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.114160",
+    "tick": 88430,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 27.618,
+        "motion_band": 42.147,
+        "breathing_band": 34.771,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.151808",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.167348",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.214100",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.316833",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.423297",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.516468",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.618669",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.714433",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.818246",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:43.919120",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.015557",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.116979",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.220546",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.325502",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.415868",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.515317",
+    "tick": 88431,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 27.809,
+        "motion_band": 43.335,
+        "breathing_band": 41.446,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.603496",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.642177",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.697744",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.728695",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.818724",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:44.918374",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.015869",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.124408",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.215712",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.318495",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.416337",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.520939",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.616606",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.721775",
+    "tick": 88432,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 16.669,
+        "motion_band": 30.448,
+        "breathing_band": 33.642,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.821397",
+    "tick": 88433,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 14.695,
+        "motion_band": 24.244,
+        "breathing_band": 22.023,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.839755",
+    "tick": 88433,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 14.695,
+        "motion_band": 24.244,
+        "breathing_band": 22.023,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.922086",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:45.938377",
+    "tick": 88433,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 14.695,
+        "motion_band": 24.244,
+        "breathing_band": 22.023,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.016004",
+    "tick": 88433,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 14.695,
+        "motion_band": 24.244,
+        "breathing_band": 22.023,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.116960",
+    "tick": 88434,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 18.611,
+        "motion_band": 31.176,
+        "breathing_band": 27.377,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.141134",
+    "tick": 88434,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 18.611,
+        "motion_band": 31.176,
+        "breathing_band": 27.377,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.226462",
+    "tick": 88435,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 31.451,
+        "motion_band": 52.659,
+        "breathing_band": 50.307,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.245214",
+    "tick": 88435,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 31.451,
+        "motion_band": 52.659,
+        "breathing_band": 50.307,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.322854",
+    "tick": 88435,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 31.451,
+        "motion_band": 52.659,
+        "breathing_band": 50.307,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.415133",
+    "tick": 88435,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 7,
+        "stale": false,
+        "variance": 31.451,
+        "motion_band": 52.659,
+        "breathing_band": 50.307,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.530357",
+    "tick": 88436,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 21.754,
+        "motion_band": 37.899,
+        "breathing_band": 33.787,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.556724",
+    "tick": 88436,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 21.754,
+        "motion_band": 37.899,
+        "breathing_band": 33.787,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.614317",
+    "tick": 88436,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 21.754,
+        "motion_band": 37.899,
+        "breathing_band": 33.787,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.715370",
+    "tick": 88436,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 12,
+        "stale": false,
+        "variance": 21.754,
+        "motion_band": 37.899,
+        "breathing_band": 33.787,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.743100",
+    "tick": 88437,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 22.285,
+        "motion_band": 36.696,
+        "breathing_band": 37.928,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.819058",
+    "tick": 88437,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 22.285,
+        "motion_band": 36.696,
+        "breathing_band": 37.928,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:46.993159",
+    "tick": 88437,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 22.285,
+        "motion_band": 36.696,
+        "breathing_band": 37.928,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.009687",
+    "tick": 88438,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 15.058,
+        "motion_band": 23.653,
+        "breathing_band": 27.779,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.068441",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.103002",
+    "tick": 88438,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 15.058,
+        "motion_band": 23.653,
+        "breathing_band": 27.779,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.139358",
+    "tick": 88438,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 15.058,
+        "motion_band": 23.653,
+        "breathing_band": 27.779,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.214680",
+    "tick": 88438,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 17,
+        "stale": false,
+        "variance": 15.058,
+        "motion_band": 23.653,
+        "breathing_band": 27.779,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.243704",
+    "tick": 88439,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 16.945,
+        "motion_band": 27.949,
+        "breathing_band": 25.865,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.320302",
+    "tick": 88439,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 16.945,
+        "motion_band": 27.949,
+        "breathing_band": 25.865,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.421749",
+    "tick": 88439,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 16.945,
+        "motion_band": 27.949,
+        "breathing_band": 25.865,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.521146",
+    "tick": 88439,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 16.945,
+        "motion_band": 27.949,
+        "breathing_band": 25.865,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.616004",
+    "tick": 88439,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 16.945,
+        "motion_band": 27.949,
+        "breathing_band": 25.865,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.719722",
+    "tick": 88439,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 16.945,
+        "motion_band": 27.949,
+        "breathing_band": 25.865,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.818864",
+    "tick": 88439,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 16.945,
+        "motion_band": 27.949,
+        "breathing_band": 25.865,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:47.926977",
+    "tick": 88439,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 16.945,
+        "motion_band": 27.949,
+        "breathing_band": 25.865,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.016719",
+    "tick": 88439,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 16.945,
+        "motion_band": 27.949,
+        "breathing_band": 25.865,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.066681",
+    "tick": 88440,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.808,
+        "motion_band": 39.758,
+        "breathing_band": 42.336,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.087437",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.118869",
+    "tick": 88440,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.808,
+        "motion_band": 39.758,
+        "breathing_band": 42.336,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.218445",
+    "tick": 88440,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.808,
+        "motion_band": 39.758,
+        "breathing_band": 42.336,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.317421",
+    "tick": 88440,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.808,
+        "motion_band": 39.758,
+        "breathing_band": 42.336,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.414063",
+    "tick": 88440,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.808,
+        "motion_band": 39.758,
+        "breathing_band": 42.336,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.524641",
+    "tick": 88440,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.808,
+        "motion_band": 39.758,
+        "breathing_band": 42.336,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.615552",
+    "tick": 88440,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.808,
+        "motion_band": 39.758,
+        "breathing_band": 42.336,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.715171",
+    "tick": 88440,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 21.808,
+        "motion_band": 39.758,
+        "breathing_band": 42.336,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.774057",
+    "tick": 88441,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 17.142,
+        "motion_band": 31.493,
+        "breathing_band": 29.212,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.817197",
+    "tick": 88441,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 17.142,
+        "motion_band": 31.493,
+        "breathing_band": 29.212,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:48.922901",
+    "tick": 88441,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 17.142,
+        "motion_band": 31.493,
+        "breathing_band": 29.212,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.017206",
+    "tick": 88441,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 17.142,
+        "motion_band": 31.493,
+        "breathing_band": 29.212,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.117181",
+    "tick": 88441,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 17.142,
+        "motion_band": 31.493,
+        "breathing_band": 29.212,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.217373",
+    "tick": 88441,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 8,
+        "stale": false,
+        "variance": 17.142,
+        "motion_band": 31.493,
+        "breathing_band": 29.212,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.291778",
+    "tick": 88442,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 17.442,
+        "motion_band": 33.314,
+        "breathing_band": 32.001,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.312203",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.344243",
+    "tick": 88442,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 17.442,
+        "motion_band": 33.314,
+        "breathing_band": 32.001,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.421703",
+    "tick": 88442,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 17.442,
+        "motion_band": 33.314,
+        "breathing_band": 32.001,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.523826",
+    "tick": 88442,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 17.442,
+        "motion_band": 33.314,
+        "breathing_band": 32.001,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.616392",
+    "tick": 88442,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 17.442,
+        "motion_band": 33.314,
+        "breathing_band": 32.001,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.716791",
+    "tick": 88442,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 17.442,
+        "motion_band": 33.314,
+        "breathing_band": 32.001,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.821766",
+    "tick": 88442,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 9,
+        "stale": false,
+        "variance": 17.442,
+        "motion_band": 33.314,
+        "breathing_band": 32.001,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.899621",
+    "tick": 88443,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 19.135,
+        "motion_band": 37.076,
+        "breathing_band": 33.571,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:49.928731",
+    "tick": 88443,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 11,
+        "stale": false,
+        "variance": 19.135,
+        "motion_band": 37.076,
+        "breathing_band": 33.571,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.002034",
+    "tick": 88444,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 10,
+        "stale": false,
+        "variance": 17.787,
+        "motion_band": 32.633,
+        "breathing_band": 33.5,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.045236",
+    "tick": 88444,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 10,
+        "stale": false,
+        "variance": 17.787,
+        "motion_band": 32.633,
+        "breathing_band": 33.5,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.116431",
+    "tick": 88444,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 10,
+        "stale": false,
+        "variance": 17.787,
+        "motion_band": 32.633,
+        "breathing_band": 33.5,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.228087",
+    "tick": 88444,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 10,
+        "stale": false,
+        "variance": 17.787,
+        "motion_band": 32.633,
+        "breathing_band": 33.5,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.317729",
+    "tick": 88444,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 10,
+        "stale": false,
+        "variance": 17.787,
+        "motion_band": 32.633,
+        "breathing_band": 33.5,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.414694",
+    "tick": 88444,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 10,
+        "stale": false,
+        "variance": 17.787,
+        "motion_band": 32.633,
+        "breathing_band": 33.5,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.514620",
+    "tick": 88444,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 10,
+        "stale": false,
+        "variance": 17.787,
+        "motion_band": 32.633,
+        "breathing_band": 33.5,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.627717",
+    "tick": 88445,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 21.531,
+        "motion_band": 38.204,
+        "breathing_band": 34.354,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.671769",
+    "tick": 0,
+    "nodos": []
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.732777",
+    "tick": 88445,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 21.531,
+        "motion_band": 38.204,
+        "breathing_band": 34.354,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.756481",
+    "tick": 88446,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 20.865,
+        "motion_band": 31.328,
+        "breathing_band": 32.022,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.787489",
+    "tick": 88446,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 20.865,
+        "motion_band": 31.328,
+        "breathing_band": 32.022,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.817449",
+    "tick": 88446,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 20.865,
+        "motion_band": 31.328,
+        "breathing_band": 32.022,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:50.921694",
+    "tick": 88446,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 20.865,
+        "motion_band": 31.328,
+        "breathing_band": 32.022,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:51.017109",
+    "tick": 88446,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 20.865,
+        "motion_band": 31.328,
+        "breathing_band": 32.022,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:51.120115",
+    "tick": 88446,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 13,
+        "stale": false,
+        "variance": 20.865,
+        "motion_band": 31.328,
+        "breathing_band": 32.022,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:51.166855",
+    "tick": 88447,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 16,
+        "stale": false,
+        "variance": 23.535,
+        "motion_band": 37.598,
+        "breathing_band": 36.617,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:51.224893",
+    "tick": 88447,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 16,
+        "stale": false,
+        "variance": 23.535,
+        "motion_band": 37.598,
+        "breathing_band": 36.617,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:51.317231",
+    "tick": 88447,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 16,
+        "stale": false,
+        "variance": 23.535,
+        "motion_band": 37.598,
+        "breathing_band": 36.617,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:51.426172",
+    "tick": 88447,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 16,
+        "stale": false,
+        "variance": 23.535,
+        "motion_band": 37.598,
+        "breathing_band": 36.617,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:51.516051",
+    "tick": 88447,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 16,
+        "stale": false,
+        "variance": 23.535,
+        "motion_band": 37.598,
+        "breathing_band": 36.617,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-04T23:04:51.562030",
+    "tick": 88448,
+    "nodos": [
+      {
+        "node_id": 1,
+        "motion_level": "present_moving",
+        "presence": true,
+        "confidence": 0.333,
+        "last_seen_ms": 14,
+        "stale": false,
+        "variance": 22.484,
+        "motion_band": 41.202,
+        "breathing_band": 34.061,
+        "frame_rate_hz": 0.0,
+        "novelty_score": 0.0
+      }
+    ]
+  }
+]
