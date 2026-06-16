@@ -275,3 +275,4 @@ v2/data/recordings/*.csi
 v2/data/.DS_Store
 _Domian/demo/training/.DS_Store
 _Domian/demo/data/historial_*.json
+_Domian/demo/data/ruview.db
