@@ -1006,7 +1006,7 @@ main {
 </div>
 
 <script>
-const WS_URL  = 'ws://192.168.0.19:8765/ws/sensing';
+const WS_URL  = 'ws://192.168.0.19:8766';  // pose_bridge.py (posición real entrenada)
 const MAX_HIST = 120;
 
 // Mapeo de estados internos a español
@@ -1572,12 +1572,24 @@ function updateMapa(data) {
   });
 
   // Personas top-N por confidence
+  // Usa pose_position (modelo entrenado real) si está disponible,
+  // sino cae al fallback bx2m simulado
+  const posReal = data.pose_position;
+
   topN.forEach((p, i) => {
-    const mx  = bx2m(p.bbox.x);
-    const my  = MAPA_CFG.DEPTO_H * (0.25 + i * 0.18);
+    let mx, my;
+    if (posReal && posReal.valido && i === 0) {
+      // Posición real solo aplica a la persona principal (modelo single-target)
+      mx = posReal.x_m;
+      my = posReal.y_m;
+    } else {
+      mx = bx2m(p.bbox.x);
+      my = MAPA_CFG.DEPTO_H * (0.25 + i * 0.18);
+    }
     const { cx, cy } = m2c(mx, my);
     const col = PERSONA_COLS[i % PERSONA_COLS.length];
     const conf = ((p.confidence || 0) * 100).toFixed(0);
+    const esReal = posReal && posReal.valido && i === 0;
 
     // Halo pulsante
     ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI * 2);
@@ -1608,7 +1620,10 @@ function updateMapa(data) {
   // Status
   const statusEl = document.getElementById('mapaStatus');
   if (statusEl) {
-    statusEl.textContent = `${est} estimada${est !== 1 ? 's' : ''} · mostrando top-${topN.length} por conf`;
+    const tagModelo = (posReal && posReal.valido)
+      ? ' · 🎯 posición real (RandomForest)'
+      : ' · posición estimada';
+    statusEl.textContent = `${est} persona${est !== 1 ? 's' : ''}${tagModelo}`;
   }
 }
 
