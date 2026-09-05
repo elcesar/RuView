@@ -21,6 +21,7 @@
 #include "led_strip.h"
 
 #include "csi_collector.h"
+#include "thermal.h"
 #include "stream_sender.h"
 #include "nvs_config.h"
 #include "edge_processing.h"
@@ -59,7 +60,52 @@ nvs_config_t g_nvs_config;
 
 static EventGroupHandle_t s_wifi_event_group;
 static int s_retry_num = 0;
-#define MAX_RETRY 10
+
+/* WiFi reconnection.
+ *
+ * This used to be `#define MAX_RETRY 10` with the disconnect handler giving up
+ * permanently once s_retry_num reached it: it set WIFI_FAIL_BIT and never
+ * called esp_wifi_connect() again. s_retry_num is only cleared on a successful
+ * IP_EVENT_STA_GOT_IP, so it accumulated over the node's entire uptime -- ten
+ * disconnects spread across days left the node permanently off the network
+ * with nothing but a power cycle to clear it.
+ *
+ * MEASURED 2026-08-30: a single AP-side event at 03:37:03 EDT disconnected all
+ * three wall-mounted nodes within three minutes of each other. Every one of
+ * them latched off and stayed off for 5.5-7.5 hours, until it was physically
+ * unplugged. CSI capture kept running throughout (it is driver-level and needs
+ * no IP), so the boards looked alive on the bench and dead to the server.
+ *
+ * Retry is now unbounded with exponential backoff. Two things that were
+ * conflated are now separate: WIFI_BOOT_WAIT_ATTEMPTS only releases app_main
+ * from its startup wait so the rest of the node can boot; it does not stop the
+ * node trying to reconnect. Nothing stops the node trying to reconnect. */
+#define WIFI_BOOT_WAIT_ATTEMPTS 10
+#define WIFI_RETRY_BASE_MS       500
+#define WIFI_RETRY_MAX_MS      30000
+
+static esp_timer_handle_t s_reconnect_timer;
+
+/* 500 ms doubling to a 30 s ceiling. Backoff matters because the failure this
+ * guards against is an AP that is down or rebooting: hammering
+ * esp_wifi_connect() at full rate for the minutes an AP takes to come back
+ * wastes power and floods the log without reconnecting any sooner. */
+static uint32_t wifi_retry_delay_ms(int attempt)
+{
+    int shift = attempt - 1;
+    if (shift < 0)  shift = 0;
+    if (shift > 6)  shift = 6;
+    uint32_t d = (uint32_t)WIFI_RETRY_BASE_MS << shift;
+    return d > WIFI_RETRY_MAX_MS ? WIFI_RETRY_MAX_MS : d;
+}
+
+/* Runs on the esp_timer task, not the event loop task -- esp_wifi_connect()
+ * must not be reached through a delay inside the event handler itself. */
+static void wifi_reconnect_cb(void *arg)
+{
+    (void)arg;
+    esp_wifi_connect();
+}
 
 static void event_handler(void *arg, esp_event_base_t event_base,
                           int32_t event_id, void *event_data)
@@ -67,13 +113,24 @@ static void event_handler(void *arg, esp_event_base_t event_base,
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (s_retry_num < MAX_RETRY) {
-            esp_wifi_connect();
-            s_retry_num++;
-            ESP_LOGI(TAG, "Retrying WiFi connection (%d/%d)", s_retry_num, MAX_RETRY);
-        } else {
+        wifi_event_sta_disconnected_t *disc = (wifi_event_sta_disconnected_t *)event_data;
+        ESP_LOGW(TAG, "WiFi disconnected, reason=%d rssi=%d", disc->reason, disc->rssi);
+        s_retry_num++;
+        /* Release the boot wait once, so a node that comes up while the AP is
+         * down still starts CSI capture and the mesh instead of blocking in
+         * app_main. Retrying continues regardless. */
+        if (s_retry_num == WIFI_BOOT_WAIT_ATTEMPTS) {
             xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
         }
+        uint32_t delay_ms = wifi_retry_delay_ms(s_retry_num);
+        if (s_reconnect_timer != NULL) {
+            esp_timer_stop(s_reconnect_timer);   /* may not be running; harmless */
+            esp_timer_start_once(s_reconnect_timer, (uint64_t)delay_ms * 1000);
+        } else {
+            esp_wifi_connect();                  /* timer unavailable: retry now */
+        }
+        ESP_LOGI(TAG, "Reconnecting in %lu ms (attempt %d)",
+                 (unsigned long)delay_ms, s_retry_num);
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
         ESP_LOGI(TAG, "Got IP: " IPSTR, IP2STR(&event->ip_info.ip));
@@ -81,6 +138,41 @@ static void event_handler(void *arg, esp_event_base_t event_base,
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
     }
 }
+
+#ifdef CONFIG_UPLINK_WATCHDOG
+/* Uplink supervision.
+ *
+ * The reconnect fix above addresses the one wedge whose mechanism we have
+ * proven. This catches the ones we have not: any state in which the node is
+ * powered, capturing, and unable to put a packet on the wire. It bounds such a
+ * state to CONFIG_UPLINK_WATCHDOG_TIMEOUT_S instead of the 7.5 hours measured
+ * on 2026-08-30.
+ *
+ * The signal is a successful sendto(), which on UDP means the stack accepted
+ * the datagram -- NOT that the server received it. That distinction is what
+ * makes this safe: stopping the aggregator does not reboot the fleet, because
+ * sendto keeps succeeding into a socket whose peer is gone. It fires only when
+ * the node's own network path is broken.
+ *
+ * It arms on the first successful send rather than at boot, so a node that has
+ * never reached the network does not reboot-loop while the AP is down; the
+ * unbounded reconnect above owns that case. */
+static void uplink_watchdog_tick(void)
+{
+    int64_t last = stream_sender_last_success_us();
+    if (last == 0) {
+        return;                      /* never delivered -- not armed yet */
+    }
+    int64_t idle_s = (esp_timer_get_time() - last) / 1000000;
+    if (idle_s < CONFIG_UPLINK_WATCHDOG_TIMEOUT_S) {
+        return;
+    }
+    ESP_LOGE(TAG, "uplink watchdog: no successful send for %lld s "
+                  "(limit %d s) -- restarting",
+             (long long)idle_s, CONFIG_UPLINK_WATCHDOG_TIMEOUT_S);
+    esp_restart();
+}
+#endif /* CONFIG_UPLINK_WATCHDOG */
 
 static void wifi_init_sta(void)
 {
@@ -102,13 +194,18 @@ static void wifi_init_sta(void)
 
     wifi_config_t wifi_config = {
         .sta = {
-            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+            /* WPA_PSK (not WPA2_PSK) so routers running WPA/WPA2-mixed
+             * compatibility mode aren't rejected with
+             * WIFI_REASON_NO_AP_FOUND_IN_AUTHMODE_THRESHOLD (#1050). */
+            .threshold.authmode = WIFI_AUTH_WPA_PSK,
         },
     };
 
     /* Copy runtime SSID/password from NVS config */
-    strncpy((char *)wifi_config.sta.ssid, g_nvs_config.wifi_ssid, sizeof(wifi_config.sta.ssid) - 1);
-    strncpy((char *)wifi_config.sta.password, g_nvs_config.wifi_password, sizeof(wifi_config.sta.password) - 1);
+    strlcpy((char *)wifi_config.sta.ssid, g_nvs_config.wifi_ssid,
+            sizeof(wifi_config.sta.ssid));
+    strlcpy((char *)wifi_config.sta.password, g_nvs_config.wifi_password,
+            sizeof(wifi_config.sta.password));
 
     /* If password is empty, use open auth */
     if (strlen((char *)wifi_config.sta.password) == 0) {
@@ -128,6 +225,17 @@ static void wifi_init_sta(void)
     }
 #endif
 
+    const esp_timer_create_args_t reconnect_args = {
+        .callback = &wifi_reconnect_cb,
+        .name     = "wifi_reconnect",
+    };
+    esp_err_t rc_ret = esp_timer_create(&reconnect_args, &s_reconnect_timer);
+    if (rc_ret != ESP_OK) {
+        ESP_LOGW(TAG, "reconnect timer create failed: %s (falling back to "
+                      "immediate retry)", esp_err_to_name(rc_ret));
+        s_reconnect_timer = NULL;
+    }
+
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "WiFi STA initialized, connecting to SSID: %s", g_nvs_config.wifi_ssid);
@@ -140,9 +248,59 @@ static void wifi_init_sta(void)
     if (bits & WIFI_CONNECTED_BIT) {
         ESP_LOGI(TAG, "Connected to WiFi");
     } else if (bits & WIFI_FAIL_BIT) {
-        ESP_LOGE(TAG, "Failed to connect to WiFi after %d retries", MAX_RETRY);
+        ESP_LOGW(TAG, "Not connected after %d attempts -- continuing boot; "
+                      "reconnection keeps retrying in the background",
+                 WIFI_BOOT_WAIT_ATTEMPTS);
     }
 }
+
+#if CONFIG_LED_GAMMA_VIZ
+/* Viridis colormap (60 steps), generated from ruv-neural-viz::ColorMap::viridis()
+ * — the rUv-Neural brain-topology colormap, now no_std (ruvnet/ruv-neural#3 /
+ * RuView#1126). Used as the ON-phase colour of the 40 Hz gamma flicker below:
+ * dark-purple (still) -> teal -> green -> yellow (strong motion). */
+static const uint8_t VIRIDIS_LUT[60][3] = {
+    { 68,  1, 84},{ 67,  6, 88},{ 67, 12, 91},{ 66, 17, 95},{ 66, 23, 99},
+    { 65, 28,103},{ 64, 34,106},{ 64, 39,110},{ 63, 45,114},{ 63, 50,118},
+    { 62, 56,121},{ 61, 61,125},{ 61, 67,129},{ 60, 72,132},{ 59, 78,136},
+    { 59, 83,139},{ 57, 87,139},{ 55, 92,139},{ 53, 96,139},{ 52,100,139},
+    { 50,104,139},{ 48,109,139},{ 46,113,139},{ 44,117,140},{ 43,122,140},
+    { 41,126,140},{ 39,130,140},{ 37,134,140},{ 36,139,140},{ 34,143,140},
+    { 35,147,139},{ 39,151,136},{ 43,154,133},{ 47,158,130},{ 52,162,127},
+    { 56,166,124},{ 60,170,121},{ 64,173,119},{ 68,177,116},{ 72,181,113},
+    { 76,185,110},{ 81,189,107},{ 85,192,104},{ 89,196,102},{ 93,200, 99},
+    {102,203, 95},{113,205, 91},{124,207, 87},{134,209, 82},{145,211, 78},
+    {156,213, 74},{167,215, 70},{178,217, 66},{188,219, 62},{199,221, 58},
+    {210,223, 54},{221,225, 49},{231,227, 45},{242,229, 41},{253,231, 37},
+};
+static led_strip_handle_t s_viz_led;
+
+/* motion_energy that saturates the colormap to yellow (CONFIG, milli-units). */
+#define LED_MOTION_FULLSCALE ((float)CONFIG_LED_MOTION_FULLSCALE_MILLI / 1000.0f)
+
+/* GENUS-style 40 Hz gamma flicker: full on/off square wave, 50% duty (toggled
+ * every 12.5 ms → 40 Hz). The ON colour is live CSI motion (edge motion_energy)
+ * mapped through the ruv-neural-viz viridis LUT — still=purple, moving=yellow.
+ * So the LED is a real 40 Hz gamma stimulus whose hue tracks sensed motion. */
+static void led_gamma_40hz_cb(void *arg)
+{
+    static bool on = false;
+    on = !on;
+    if (on) {
+        edge_vitals_pkt_t v;
+        float m = edge_get_vitals(&v) ? v.motion_energy : 0.0f;
+        float norm = m / LED_MOTION_FULLSCALE;
+        if (norm < 0.0f) norm = 0.0f;
+        if (norm > 1.0f) norm = 1.0f;
+        int idx = (int)(norm * 59.0f + 0.5f);
+        const uint8_t *c = VIRIDIS_LUT[idx];
+        led_strip_set_pixel(s_viz_led, 0, c[0], c[1], c[2]); /* R,G,B (driver maps to GRB) */
+    } else {
+        led_strip_set_pixel(s_viz_led, 0, 0, 0, 0);          /* off phase */
+    }
+    led_strip_refresh(s_viz_led);
+}
+#endif /* CONFIG_LED_GAMMA_VIZ */
 
 void app_main(void)
 {
@@ -173,15 +331,16 @@ void app_main(void)
     ESP_LOGI(TAG, "%s CSI Node (ADR-018 / ADR-110) — v%s — Node ID: %d",
              target_name, app_desc->version, g_nvs_config.node_id);
 
-    /* Turn off onboard WS2812 LED.
-     * S3 dev boards put the LED on GPIO 38; C6 dev boards on GPIO 8.
-     * On C6, GPIO 38 doesn't exist (only 0-30) — gate the init by target. */
+    /* Onboard WS2812. C6 wires the LED to GPIO 8; S3 to GPIO 38 (DevKitC-1 v1.0)
+     * or GPIO 48 (DevKitC-1 v1.1 / N16R8 — see #962). On S3 we drive 48 (the
+     * common module). On C6, GPIO 38/48 don't exist (only 0-30) — gate by target.
+     * Behaviour is set by CONFIG_LED_GAMMA_VIZ (ADR-183): on = 40 Hz gamma flicker
+     * coloured by CSI motion; off = clear the LED at boot. */
 #if defined(CONFIG_IDF_TARGET_ESP32C6)
     const int led_gpio = 8;
 #else
-    const int led_gpio = 38;
+    const int led_gpio = 48;
 #endif
-    led_strip_handle_t led_strip;
     led_strip_config_t strip_config = {
         .strip_gpio_num = led_gpio,
         .max_leds = 1,
@@ -193,9 +352,26 @@ void app_main(void)
         .resolution_hz = 10 * 1000 * 1000, // 10MHz
         .flags.with_dma = false,
     };
+#if CONFIG_LED_GAMMA_VIZ
+    if (led_strip_new_rmt_device(&strip_config, &rmt_config, &s_viz_led) == ESP_OK) {
+        const esp_timer_create_args_t viz_args = {
+            .callback = &led_gamma_40hz_cb,
+            .name = "led_gamma_40hz",
+        };
+        esp_timer_handle_t viz_timer;
+        if (esp_timer_create(&viz_args, &viz_timer) == ESP_OK) {
+            esp_timer_start_periodic(viz_timer, 12500); // 12.5 ms toggle → 40 Hz square wave
+            ESP_LOGI(TAG, "Onboard WS2812: 40 Hz gamma flicker (GENUS), colour=CSI motion via ruv-neural-viz, GPIO %d", led_gpio);
+        }
+    }
+#else
+    /* Viz disabled — clear the onboard LED at boot and release the RMT channel. */
+    led_strip_handle_t led_strip;
     if (led_strip_new_rmt_device(&strip_config, &rmt_config, &led_strip) == ESP_OK) {
         led_strip_clear(led_strip);
+        led_strip_del(led_strip);
     }
+#endif /* CONFIG_LED_GAMMA_VIZ */
 
     /* ADR-110 P4: 802.15.4 mesh time-sync (C6 only).
      * Initialized BEFORE WiFi so it's available even when WiFi STA can't
@@ -245,6 +421,36 @@ void app_main(void)
         ESP_LOGI(TAG, "Mock CSI active (scenario=%d)", CONFIG_CSI_MOCK_SCENARIO);
     }
 #else
+    /* Why did we just start? Nothing recorded this before, and it is the
+     * single most useful line in a fleet log: a node that reboots tells you
+     * almost nothing, but a node that reboots with ESP_RST_BROWNOUT tells you
+     * its supply sagged, which on shared outlets is a wiring problem rather
+     * than a firmware one. Three nodes dropping together on 2026-08-28 would
+     * have been answered by this line. */
+    {
+        esp_reset_reason_t rr = esp_reset_reason();
+        const char *why =
+            rr == ESP_RST_POWERON  ? "power-on" :
+            rr == ESP_RST_EXT      ? "external reset" :
+            rr == ESP_RST_SW       ? "software restart" :
+            rr == ESP_RST_PANIC    ? "PANIC (crash)" :
+            rr == ESP_RST_INT_WDT  ? "interrupt watchdog" :
+            rr == ESP_RST_TASK_WDT ? "task watchdog" :
+            rr == ESP_RST_WDT      ? "other watchdog" :
+            rr == ESP_RST_BROWNOUT ? "BROWNOUT (supply sagged)" :
+            rr == ESP_RST_DEEPSLEEP? "deep-sleep wake" : "unknown";
+        if (rr == ESP_RST_PANIC || rr == ESP_RST_BROWNOUT ||
+            rr == ESP_RST_INT_WDT || rr == ESP_RST_TASK_WDT) {
+            ESP_LOGW(TAG, "reset reason: %s (%d) <-- not a clean start", why, (int)rr);
+        } else {
+            ESP_LOGI(TAG, "reset reason: %s (%d)", why, (int)rr);
+        }
+    }
+
+    /* Bring thermal monitoring up before the radio is loaded, so the first
+     * reading is taken against a known-idle baseline rather than mid-burst. */
+    thermal_init();
+
     csi_collector_init();
 
     /* ADR-073: Start multi-frequency channel hopping if configured in NVS. */
@@ -360,9 +566,12 @@ void app_main(void)
             .ingest_sec    = g_nvs_config.swarm_ingest_sec,
             .enabled       = 1,
         };
-        strncpy(swarm_cfg.seed_url, g_nvs_config.seed_url, sizeof(swarm_cfg.seed_url) - 1);
-        strncpy(swarm_cfg.seed_token, g_nvs_config.seed_token, sizeof(swarm_cfg.seed_token) - 1);
-        strncpy(swarm_cfg.zone_name, g_nvs_config.zone_name, sizeof(swarm_cfg.zone_name) - 1);
+        strlcpy(swarm_cfg.seed_url, g_nvs_config.seed_url,
+                sizeof(swarm_cfg.seed_url));
+        strlcpy(swarm_cfg.seed_token, g_nvs_config.seed_token,
+                sizeof(swarm_cfg.seed_token));
+        strlcpy(swarm_cfg.zone_name, g_nvs_config.zone_name,
+                sizeof(swarm_cfg.zone_name));
         swarm_ret = swarm_bridge_init(&swarm_cfg, csi_collector_get_node_id());
         if (swarm_ret != ESP_OK) {
             ESP_LOGW(TAG, "Swarm bridge init failed: %s", esp_err_to_name(swarm_ret));
@@ -434,8 +643,11 @@ void app_main(void)
              (swarm_ret == ESP_OK) ? g_nvs_config.seed_url : "off",
              (adapt_ret == ESP_OK) ? "on" : "off");
 
-    /* Main loop — keep alive */
+    /* Main loop — keep alive, and supervise the uplink. */
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(10000));
+#ifdef CONFIG_UPLINK_WATCHDOG
+        uplink_watchdog_tick();
+#endif
     }
 }

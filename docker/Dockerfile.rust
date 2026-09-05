@@ -14,6 +14,13 @@ COPY v2/crates/ ./crates/
 # Copy vendored RuVector crates
 COPY vendor/ruvector/ /build/vendor/ruvector/
 
+# Copy vendored RuField submodule — the `wifi-densepose-rufield` bridge crate
+# (ADR-262) path-deps `../../../vendor/rufield/crates/*`, which from the Docker
+# build layout (v2/ collapsed into /build) resolves to /vendor/rufield. Copy the
+# whole tree so the rufield workspace Cargo.toml (workspace-dep inheritance) and
+# the four bridged crates (rufield-core/-provenance/-privacy/-fusion) all resolve.
+COPY vendor/rufield/ /vendor/rufield/
+
 # Build release binaries:
 #   - sensing-server with `mqtt` feature so the HA-DISCO MQTT publisher
 #     (ADR-115) is wired in (auto-discovery topics flow to Home Assistant)
@@ -22,7 +29,12 @@ COPY vendor/ruvector/ /build/vendor/ruvector/
 #   - homecore-server, the ADRs-126-134 HOMECORE native Rust port of
 #     Home Assistant (HA-wire-compat REST + WebSocket on :8123,
 #     SQLite + ruvector recorder, automation, assist, plugins, HAP)
-RUN cargo build --release -p wifi-densepose-sensing-server --features mqtt 2>&1 \
+#
+# SENSING_FEATURES lets a compose file extend the sensing-server feature
+# set (docker/otel-compose.yml builds with `mqtt,otel` for OTLP log
+# export) without forking this Dockerfile.
+ARG SENSING_FEATURES=mqtt
+RUN cargo build --release -p wifi-densepose-sensing-server --features "${SENSING_FEATURES}" 2>&1 \
  && cargo build --release -p cog-ha-matter 2>&1 \
  && cargo build --release -p homecore-server 2>&1 \
  && strip target/release/sensing-server target/release/cog-ha-matter target/release/homecore-server
@@ -63,8 +75,6 @@ RUN set -e; \
 # Optional bearer-token auth on /api/v1/*: leave unset for LAN-mode (default),
 # set to enforce `Authorization: Bearer <token>` (see bearer_auth module, #443).
 #   docker run -e RUVIEW_API_TOKEN=$(openssl rand -hex 32) ...
-ENV RUVIEW_API_TOKEN=
-
 # HTTP API
 EXPOSE 3000
 # WebSocket

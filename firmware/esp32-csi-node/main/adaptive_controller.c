@@ -13,6 +13,7 @@
  */
 
 #include "adaptive_controller.h"
+#include "thermal.h"
 #include "rv_radio_ops.h"
 #include "rv_feature_state.h"
 #include "rv_mesh.h"
@@ -248,9 +249,10 @@ static void medium_loop_cb(TimerHandle_t t)
     portEXIT_CRITICAL(&s_obs_lock);
 
     if (s_obs_valid) {
-        ESP_LOGI(TAG, "medium tick: state=%u yield=%upps motion=%.2f presence=%.2f rssi=%d",
+        ESP_LOGI(TAG, "medium tick: state=%u yield=%upps dsp=%.1fHz motion=%.2f presence=%.2f rssi=%d",
                  (unsigned)s_state,
                  (unsigned)obs.pkt_yield_per_sec,
+                 (double)edge_get_sample_rate_hz(),
                  (double)obs.motion_score,
                  (double)obs.presence_score,
                  (int)obs.rssi_median_dbm);
@@ -319,7 +321,9 @@ static void emit_feature_state(void)
                               (uint64_t)esp_timer_get_time(),
                               profile);
 
-    int sent = stream_sender_send((const uint8_t *)&pkt, sizeof(pkt));
+    /* feature_state is ~1 Hz and small — priority path so the CSI ENOMEM
+     * backoff can't starve it (#1183). */
+    int sent = stream_sender_send_priority((const uint8_t *)&pkt, sizeof(pkt));
     if (sent < 0) {
         ESP_LOGW(TAG, "feature_state emit failed");
     }
@@ -328,16 +332,23 @@ static void emit_feature_state(void)
 static void slow_loop_cb(TimerHandle_t t)
 {
     (void)t;
+    /* Sample the die and apply the thermal policy. The slow loop (30 s) is the
+     * right cadence: the die does not change quickly, and reading it more
+     * often buys nothing but noise. No-op unless CONFIG_THERMAL_MONITOR. */
+    thermal_tick();
     /* ADR-081 L3: publish a HEALTH mesh message every slow tick
      * (default 30 s). The coordinator uses these to track liveness and
      * detect sync-error drift. */
     uint8_t nid[8];
     node_id_bytes(nid);
-    rv_mesh_send_health(s_role, s_mesh_epoch, nid);
+    /* #1183: report the actual send result — the old log printed "HEALTH sent"
+     * unconditionally even when rv_mesh_send returned ESP_FAIL. */
+    esp_err_t health_rc = rv_mesh_send_health(s_role, s_mesh_epoch, nid);
 
-    ESP_LOGI(TAG, "slow tick (state=%u, feature_state_seq=%u, role=%u, epoch=%u) HEALTH sent",
+    ESP_LOGI(TAG, "slow tick (state=%u, feature_state_seq=%u, role=%u, epoch=%u) HEALTH %s",
              (unsigned)s_state, (unsigned)s_feature_state_seq,
-             (unsigned)s_role, (unsigned)s_mesh_epoch);
+             (unsigned)s_role, (unsigned)s_mesh_epoch,
+             health_rc == ESP_OK ? "sent" : "FAILED");
 }
 
 /* ---- Public API ---- */

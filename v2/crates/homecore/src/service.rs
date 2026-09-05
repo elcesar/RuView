@@ -1,4 +1,4 @@
-//! Service registry stub.
+//! Concurrent service registry with panic-isolated direct dispatch.
 //!
 //! Mirrors `homeassistant.core.ServiceRegistry`. P1 ships the public
 //! surface + a simple direct-dispatch `call` so downstream ADRs can
@@ -15,7 +15,8 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tokio::sync::RwLock;
 
-use crate::event::Context;
+use crate::bus::EventBus;
+use crate::event::{Context, SystemEvent};
 
 /// Service name within a domain. e.g. `light.turn_on` → domain
 /// `"light"`, service `"turn_on"`.
@@ -49,6 +50,8 @@ pub enum ServiceError {
     NotRegistered { domain: String, service: String },
     #[error("service handler returned error: {0}")]
     HandlerFailed(String),
+    #[error("service handler panicked: {0}")]
+    HandlerPanicked(String),
 }
 
 /// Handler trait. Integration code implements this and registers via
@@ -76,12 +79,22 @@ where
 #[derive(Clone)]
 pub struct ServiceRegistry {
     handlers: Arc<RwLock<HashMap<ServiceName, Arc<dyn ServiceHandler>>>>,
+    bus: Option<EventBus>,
 }
 
 impl ServiceRegistry {
     pub fn new() -> Self {
+        Self::new_inner(None)
+    }
+
+    pub fn with_event_bus(bus: EventBus) -> Self {
+        Self::new_inner(Some(bus))
+    }
+
+    fn new_inner(bus: Option<EventBus>) -> Self {
         Self {
             handlers: Arc::new(RwLock::new(HashMap::new())),
+            bus,
         }
     }
 
@@ -99,13 +112,37 @@ impl ServiceRegistry {
 
     /// Call a service. P1 direct dispatch; P2 routes through the
     /// event bus per ADR-127 §2.3.
+    ///
+    /// The handler runs **outside** the registry lock (we clone the
+    /// `Arc<dyn ServiceHandler>` out of the read guard first), so a slow or
+    /// panicking handler can never poison the `RwLock` or block other
+    /// callers. A panic inside the handler is additionally caught and
+    /// converted to [`ServiceError::HandlerPanicked`] rather than unwinding
+    /// into the caller's task — one buggy integration cannot abort the task
+    /// that drives the engine. Mirrors HA isolating service-handler
+    /// exceptions.
     pub async fn call(&self, call: ServiceCall) -> Result<serde_json::Value, ServiceError> {
+        if let Some(bus) = &self.bus {
+            bus.fire_system(SystemEvent::ServiceCalled {
+                domain: call.name.domain.clone(),
+                service: call.name.service.clone(),
+                data: call.data.clone(),
+                context: call.context.clone(),
+            });
+        }
         let handler = {
             let guard = self.handlers.read().await;
             guard.get(&call.name).cloned()
         };
         match handler {
-            Some(h) => h.call(call).await,
+            Some(h) => {
+                use futures::FutureExt;
+                let fut = std::panic::AssertUnwindSafe(h.call(call));
+                match fut.catch_unwind().await {
+                    Ok(result) => result,
+                    Err(panic) => Err(ServiceError::HandlerPanicked(panic_message(panic))),
+                }
+            }
             None => Err(ServiceError::NotRegistered {
                 domain: call.name.domain.clone(),
                 service: call.name.service.clone(),
@@ -121,6 +158,19 @@ impl ServiceRegistry {
 impl Default for ServiceRegistry {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+/// Best-effort extraction of a panic payload's message for
+/// [`ServiceError::HandlerPanicked`]. Panic payloads are usually `&str`
+/// or `String`; anything else collapses to a generic label.
+fn panic_message(payload: Box<dyn std::any::Any + Send>) -> String {
+    if let Some(s) = payload.downcast_ref::<&str>() {
+        (*s).to_string()
+    } else if let Some(s) = payload.downcast_ref::<String>() {
+        s.clone()
+    } else {
+        "<non-string panic payload>".to_string()
     }
 }
 
@@ -166,5 +216,57 @@ mod tests {
             .await
             .unwrap_err();
         assert!(matches!(err, ServiceError::NotRegistered { .. }));
+    }
+
+    /// Service isolation: a panicking handler must be contained — converted
+    /// to `HandlerPanicked` rather than unwinding into the caller's task —
+    /// and the registry must remain fully usable afterwards (no poisoned
+    /// lock, other services still callable). On the pre-fix code the panic
+    /// unwinds through `call`, so the `catch_unwind`-based assertion below
+    /// fails (the await point panics instead of returning an `Err`).
+    #[tokio::test]
+    async fn panicking_handler_is_isolated_and_registry_survives() {
+        let reg = ServiceRegistry::new();
+        reg.register(
+            ServiceName::new("bad", "boom"),
+            FnHandler(|_call: ServiceCall| async move {
+                panic!("handler exploded");
+                #[allow(unreachable_code)]
+                Ok(serde_json::json!(null))
+            }),
+        )
+        .await;
+        reg.register(
+            ServiceName::new("good", "ping"),
+            FnHandler(|_call: ServiceCall| async move { Ok(serde_json::json!("pong")) }),
+        )
+        .await;
+
+        // The panicking call returns an error, not an unwind.
+        let err = reg
+            .call(ServiceCall {
+                name: ServiceName::new("bad", "boom"),
+                data: serde_json::json!({}),
+                context: Context::new(),
+            })
+            .await
+            .unwrap_err();
+        assert!(
+            matches!(err, ServiceError::HandlerPanicked(ref m) if m.contains("handler exploded")),
+            "expected HandlerPanicked, got {err:?}",
+        );
+
+        // The registry is not poisoned: a healthy service still works, and
+        // the bad service is still registered (call path, not lock, failed).
+        let ok = reg
+            .call(ServiceCall {
+                name: ServiceName::new("good", "ping"),
+                data: serde_json::json!({}),
+                context: Context::new(),
+            })
+            .await
+            .unwrap();
+        assert_eq!(ok, serde_json::json!("pong"));
+        assert!(reg.has(&ServiceName::new("bad", "boom")).await);
     }
 }

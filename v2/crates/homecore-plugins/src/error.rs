@@ -21,9 +21,29 @@ pub enum PluginError {
     #[error("runtime error: {0}")]
     RuntimeError(String),
 
+    /// Plugin discovery or filesystem layout is invalid.
+    #[error("plugin discovery failed: {0}")]
+    Discovery(String),
+
+    /// A configured manifest, module, or ABI payload exceeds its limit.
+    #[error("plugin resource limit exceeded: {0}")]
+    ResourceLimit(String),
+
     /// The plugin's `setup` hook returned an error.
     #[error("plugin setup failed: {0}")]
     SetupFailed(String),
+
+    /// The plugin failed signature/integrity verification (ADR-162 P4):
+    /// hash mismatch, bad signature, untrusted publisher, or unsigned
+    /// module under a non-dev trust policy.
+    #[error("plugin signature rejected: {0}")]
+    SignatureRejected(String),
+
+    /// A plugin attempted a host call (e.g. `hc_state_set`) on an entity
+    /// it did not declare in `homecore_permissions` (ADR-162 P5 authority
+    /// isolation).
+    #[error("plugin permission denied: {0}")]
+    PermissionDenied(String),
 
     /// The plugin's `unload` hook returned an error.
     #[error("plugin unload failed: {0}")]

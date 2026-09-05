@@ -7,7 +7,8 @@
 //! (the residual).
 //!
 //! # Algorithm
-//! 1. Collect CSI during empty-room calibration (>=10 min at 20 Hz)
+//! 1. Collect CSI during empty-room calibration (>=10 min wall-clock; the
+//!    frame target is this duration at the assumed 20 Hz single-node rate)
 //! 2. Compute per-link baseline mean (Welford online accumulator)
 //! 3. Decompose covariance via SVD to extract environmental modes
 //! 4. At runtime: observation - baseline, project out top-K modes, keep residual
@@ -22,6 +23,30 @@ use ndarray::Array2;
 use ndarray_linalg::Eigh;
 #[cfg(feature = "eigenvalue")]
 use ndarray_linalg::UPLO;
+use serde::{Deserialize, Serialize};
+
+// ---------------------------------------------------------------------------
+// Calibration window constants
+// ---------------------------------------------------------------------------
+
+/// Intended wall-clock duration of the empty-room calibration window (s).
+///
+/// The Welford statistics exist to absorb slow environmental variation —
+/// HVAC cycles, thermal drift — so the calibration gate is expressed in
+/// wall-clock time. The historical frame target of 12,000 is this duration at
+/// the assumed single-node rate. Every accepted node packet advances the same
+/// field model, so N nodes reach any frame target N times faster; frames alone
+/// therefore cannot gate calibration (#1756).
+pub const CALIBRATION_DURATION_S: f64 = 600.0;
+
+/// Assumed per-node CSI rate (Hz) used to relate the frame target to
+/// [`CALIBRATION_DURATION_S`] ("10 min at 20 Hz").
+pub const ASSUMED_CALIBRATION_RATE_HZ: f64 = 20.0;
+
+/// A recent window whose mean remains within this residual energy of the
+/// empty room manifold is treated as background before eigenvalue counting.
+#[cfg(feature = "eigenvalue")]
+const EMPTY_ROOM_RESIDUAL_ENERGY_MAX: f64 = 1.0;
 
 // ---------------------------------------------------------------------------
 // Error types
@@ -33,6 +58,12 @@ pub enum FieldModelError {
     /// Not enough calibration frames collected.
     #[error("Insufficient calibration frames: need {needed}, got {got}")]
     InsufficientCalibration { needed: usize, got: usize },
+
+    /// Calibration window shorter than the intended wall-clock duration.
+    /// A frame count alone cannot gate calibration: N nodes streaming in
+    /// aggregate reach any frame target in 1/N of the intended window (#1756).
+    #[error("Calibration window too short: need {needed_s:.1}s of wall-clock time, got {got_s:.1}s")]
+    InsufficientCalibrationDuration { needed_s: f64, got_s: f64 },
 
     /// Dimensionality mismatch between observation and baseline.
     #[error("Dimension mismatch: baseline has {expected} subcarriers, observation has {got}")]
@@ -105,6 +136,10 @@ impl WelfordStats {
     }
 
     /// Population variance (biased). Returns 0.0 if count < 2.
+    ///
+    /// The `count < 2` guard is the n=0 NaN guard (ADR-154 §7.4 #10): at n=0,
+    /// `m2 = 0` and `count = 0` would yield `0.0/0.0 = NaN`. Pinned by
+    /// `welford_finite_at_n0_and_n1`.
     pub fn variance(&self) -> f64 {
         if self.count < 2 {
             0.0
@@ -119,6 +154,10 @@ impl WelfordStats {
     }
 
     /// Sample variance (unbiased). Returns 0.0 if count < 2.
+    ///
+    /// The `count < 2` guard is load-bearing (ADR-154 §7.4 #10): at n=0 the
+    /// `(self.count - 1)` term would underflow `0usize − 1` and at n=1 it would
+    /// divide by zero. Pinned by `welford_finite_at_n0_and_n1`.
     pub fn sample_variance(&self) -> f64 {
         if self.count < 2 {
             0.0
@@ -228,7 +267,8 @@ impl LinkBaselineStats {
 // ---------------------------------------------------------------------------
 
 /// Configuration for field model calibration and runtime.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct FieldModelConfig {
     /// Number of links in the mesh.
     pub n_links: usize,
@@ -236,8 +276,18 @@ pub struct FieldModelConfig {
     pub n_subcarriers: usize,
     /// Number of environmental modes to retain (K). Max 5.
     pub n_modes: usize,
-    /// Minimum calibration frames before baseline is valid (10 min at 20 Hz = 12000).
+    /// Minimum calibration frames before baseline is valid. Derived from the
+    /// intended wall-clock window at the assumed single-node rate
+    /// (`CALIBRATION_DURATION_S * ASSUMED_CALIBRATION_RATE_HZ` = 12,000).
+    /// A frame count alone is not sufficient: N nodes streaming in aggregate
+    /// reach it in 1/N of the window, so `min_calibration_duration_s` also
+    /// gates finalization (#1756).
     pub min_calibration_frames: usize,
+    /// Minimum wall-clock duration of the calibration window in seconds.
+    /// Slow environmental variation (HVAC cycles, thermal drift) can only be
+    /// observed over time, regardless of how many frames a fast fleet
+    /// delivers (#1756). 0 disables the duration gate (tests only).
+    pub min_calibration_duration_s: f64,
     /// Baseline expiry in seconds (default 86400 = 24 hours).
     pub baseline_expiry_s: f64,
 }
@@ -248,7 +298,9 @@ impl Default for FieldModelConfig {
             n_links: 6,
             n_subcarriers: 56,
             n_modes: 3,
-            min_calibration_frames: 12_000,
+            min_calibration_frames: (CALIBRATION_DURATION_S * ASSUMED_CALIBRATION_RATE_HZ)
+                as usize,
+            min_calibration_duration_s: CALIBRATION_DURATION_S,
             baseline_expiry_s: 86_400.0,
         }
     }
@@ -259,7 +311,8 @@ impl Default for FieldModelConfig {
 /// Learned from SVD on the covariance of CSI amplitudes during
 /// empty-room calibration. The top-K modes capture environmental
 /// variation (temperature, humidity, time-of-day effects).
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct FieldNormalMode {
     /// Per-link baseline mean: `[n_links][n_subcarriers]`.
     pub baseline: Vec<Vec<f64>>,
@@ -317,6 +370,18 @@ pub enum CalibrationStatus {
     Expired,
 }
 
+/// Privacy reduced restart image for a completed field model.
+///
+/// This contains only aggregate baseline statistics and environmental modes.
+/// It excludes raw CSI frames, device addresses, room names, credentials, and
+/// calibration authority. A restored image is only a bootstrap prior.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FieldModelSnapshotV1 {
+    pub config: FieldModelConfig,
+    pub modes: FieldNormalMode,
+}
+
 /// The persistent field model for a single room.
 ///
 /// Maintains per-link Welford statistics during calibration, then
@@ -337,6 +402,9 @@ pub struct FieldModel {
     covariance_sum: Option<Array2<f64>>,
     /// Number of frames accumulated into covariance_sum.
     covariance_count: u64,
+    /// Monotonic timestamp of the first accepted calibration frame of the
+    /// current session; `None` until collection starts (#1756).
+    calibration_started: Option<std::time::Instant>,
 }
 
 /// Diagonal variance fallback for when full covariance SVD is unavailable.
@@ -421,6 +489,7 @@ impl FieldModel {
             last_calibration_us: 0,
             covariance_sum: None,
             covariance_count: 0,
+            calibration_started: None,
         })
     }
 
@@ -434,11 +503,132 @@ impl FieldModel {
         self.modes.as_ref()
     }
 
+    /// Export aggregate model state suitable for local restart persistence.
+    /// Raw calibration observations and Welford accumulators are not exported.
+    pub fn export_snapshot(&self) -> Result<FieldModelSnapshotV1, FieldModelError> {
+        let modes = self.modes.clone().ok_or(FieldModelError::NotCalibrated)?;
+        Ok(FieldModelSnapshotV1 {
+            config: self.config.clone(),
+            modes,
+        })
+    }
+
+    /// Restore a bounded, validated aggregate snapshot.
+    pub fn from_snapshot(
+        snapshot: FieldModelSnapshotV1,
+        current_us: u64,
+    ) -> Result<Self, FieldModelError> {
+        let config = &snapshot.config;
+        if config.n_links > 16 || config.n_subcarriers > 2_048 {
+            return Err(FieldModelError::InvalidConfig(
+                "snapshot dimensions exceed bounded limits".into(),
+            ));
+        }
+        if !config.min_calibration_duration_s.is_finite()
+            || config.min_calibration_duration_s < 0.0
+            || !config.baseline_expiry_s.is_finite()
+            || config.baseline_expiry_s <= 0.0
+            || config.baseline_expiry_s > 604_800.0
+        {
+            return Err(FieldModelError::InvalidConfig(
+                "snapshot timing values are invalid".into(),
+            ));
+        }
+
+        let modes = &snapshot.modes;
+        let baseline_shape_valid = modes.baseline.len() == config.n_links
+            && modes
+                .baseline
+                .iter()
+                .all(|link| link.len() == config.n_subcarriers);
+        let mode_shape_valid = modes.environmental_modes.len() == modes.mode_energies.len()
+            && modes.environmental_modes.len() <= config.n_modes
+            && modes
+                .environmental_modes
+                .iter()
+                .all(|mode| mode.len() == config.n_subcarriers);
+        let values_valid = modes
+            .baseline
+            .iter()
+            .flatten()
+            .chain(modes.environmental_modes.iter().flatten())
+            .all(|value| value.is_finite())
+            && modes
+                .mode_energies
+                .iter()
+                .all(|value| value.is_finite() && *value >= 0.0)
+            && modes.variance_explained.is_finite()
+            && (0.0..=10.0).contains(&modes.variance_explained)
+            && modes.baseline_noise_var.is_finite()
+            && modes.baseline_noise_var >= 0.0
+            && modes.baseline_eigenvalue_count <= config.n_subcarriers;
+        if !baseline_shape_valid || !mode_shape_valid || !values_valid {
+            return Err(FieldModelError::InvalidConfig(
+                "snapshot modes are malformed or non finite".into(),
+            ));
+        }
+        if modes.calibrated_at_us == 0
+            || modes.calibrated_at_us > current_us.saturating_add(300_000_000)
+        {
+            return Err(FieldModelError::InvalidConfig(
+                "snapshot calibration time is invalid".into(),
+            ));
+        }
+        let elapsed_s = current_us.saturating_sub(modes.calibrated_at_us) as f64 / 1_000_000.0;
+        if elapsed_s > config.baseline_expiry_s {
+            return Err(FieldModelError::BaselineExpired {
+                elapsed_s,
+                max_s: config.baseline_expiry_s,
+            });
+        }
+
+        let mut model = Self::new(snapshot.config)?;
+        model.status = if elapsed_s > model.config.baseline_expiry_s * 0.5 {
+            CalibrationStatus::Stale
+        } else {
+            CalibrationStatus::Fresh
+        };
+        model.last_calibration_us = modes.calibrated_at_us;
+        model.modes = Some(snapshot.modes);
+        Ok(model)
+    }
+
     /// Number of calibration frames collected so far.
     pub fn calibration_frame_count(&self) -> u64 {
         self.link_stats
             .first()
             .map_or(0, |ls| ls.observation_count())
+    }
+
+    /// Minimum frames required before `finalize_calibration` will succeed.
+    pub fn min_calibration_frames(&self) -> usize {
+        self.config.min_calibration_frames
+    }
+
+    /// Minimum wall-clock duration (s) of the calibration window required
+    /// before `finalize_calibration` will succeed (#1756).
+    pub fn min_calibration_duration_s(&self) -> f64 {
+        self.config.min_calibration_duration_s
+    }
+
+    /// Wall-clock seconds elapsed since the first accepted calibration frame
+    /// of the current session, or 0.0 if collection has not started (#1756).
+    pub fn calibration_elapsed_s(&self) -> f64 {
+        self.calibration_started
+            .map(|t| t.elapsed().as_secs_f64())
+            .unwrap_or(0.0)
+    }
+
+    /// Effective aggregate frames per second since collection started, or 0.0
+    /// if collection has not started (#1756). With N nodes streaming, this is
+    /// roughly N times the single-node rate.
+    pub fn calibration_frames_per_second(&self) -> f64 {
+        let elapsed = self.calibration_elapsed_s();
+        if elapsed > 0.0 {
+            self.calibration_frame_count() as f64 / elapsed
+        } else {
+            0.0
+        }
     }
 
     /// Feed a calibration frame (one CSI observation per link during empty room).
@@ -453,6 +643,11 @@ impl FieldModel {
         }
         for (link_stat, obs) in self.link_stats.iter_mut().zip(observations.iter()) {
             link_stat.update(obs)?;
+        }
+        // Start the wall-clock calibration window on the first accepted frame
+        // (#1756): finalize gates on elapsed duration as well as frame count.
+        if self.calibration_started.is_none() {
+            self.calibration_started = Some(std::time::Instant::now());
         }
         if self.status == CalibrationStatus::Uncalibrated {
             self.status = CalibrationStatus::Collecting;
@@ -488,7 +683,8 @@ impl FieldModel {
 
     /// Finalize calibration: compute SVD to extract environmental modes.
     ///
-    /// Requires at least `min_calibration_frames` observations.
+    /// Requires at least `min_calibration_frames` observations collected over
+    /// at least `min_calibration_duration_s` of wall-clock time (#1756).
     /// `timestamp_us` is the current timestamp in microseconds.
     /// `geometry_hash` identifies the mesh geometry at calibration time.
     pub fn finalize_calibration(
@@ -501,6 +697,19 @@ impl FieldModel {
             return Err(FieldModelError::InsufficientCalibration {
                 needed: self.config.min_calibration_frames,
                 got: count as usize,
+            });
+        }
+        // #1756: the frame gate encodes "duration at the single-node rate",
+        // but every accepted node packet advances this model, so a fleet of N
+        // nodes satisfies it in ~1/N of the intended window. Gate on the
+        // wall-clock duration as well so the baseline covers the slow
+        // environmental variation the Welford statistics are meant to absorb.
+        let elapsed_s = self.calibration_elapsed_s();
+        let need_s = self.config.min_calibration_duration_s;
+        if need_s > 0.0 && elapsed_s < need_s {
+            return Err(FieldModelError::InsufficientCalibrationDuration {
+                needed_s: need_s,
+                got_s: elapsed_s,
             });
         }
 
@@ -784,6 +993,17 @@ impl FieldModel {
             *m /= count as f64;
         }
 
+        // Rank alone is not person evidence. A continuation window can expose
+        // more significant eigenvalues while its mean remains on the learned
+        // empty room manifold. Fail toward empty only inside the same
+        // conservative residual energy boundary used by the server fallback.
+        if self
+            .extract_perturbation(&[mean.clone()])
+            .is_ok_and(|perturbation| perturbation.total_energy <= EMPTY_ROOM_RESIDUAL_ENERGY_MAX)
+        {
+            return Ok(0);
+        }
+
         let mut cov = Array2::<f64>::zeros((n, n));
         for frame in recent_frames {
             if frame.len() >= n {
@@ -882,6 +1102,7 @@ impl FieldModel {
         self.status = CalibrationStatus::Uncalibrated;
         self.covariance_sum = None;
         self.covariance_count = 0;
+        self.calibration_started = None;
     }
 }
 
@@ -899,6 +1120,8 @@ mod tests {
             n_subcarriers: n_sc,
             n_modes: 3,
             min_calibration_frames: min_frames,
+            // Tests feed frames instantly; disable the wall-clock gate (#1756).
+            min_calibration_duration_s: 0.0,
             baseline_expiry_s: 86_400.0,
         }
     }
@@ -956,6 +1179,52 @@ mod tests {
         assert_eq!(w.count, 1);
         assert!((w.mean - 42.0).abs() < 1e-10);
         assert!((w.variance() - 0.0).abs() < 1e-10);
+    }
+
+    /// ADR-154 §7.4 #10: every statistic must stay FINITE at the n=0 and n=1
+    /// boundaries. This pins the load-bearing `count < 2` guards: without them
+    /// `sample_variance` at n=0 underflows `(0usize − 1)` and divides by a huge
+    /// bogus divisor, and `variance`/`z_score` produce `0.0/0.0 = NaN`. Same
+    /// family as the §4 divide-by-(n−1) window trio.
+    #[test]
+    fn welford_finite_at_n0_and_n1() {
+        // n = 0: fresh accumulator, nothing observed.
+        let w0 = WelfordStats::new();
+        assert_eq!(w0.count, 0);
+        for v in [
+            w0.mean,
+            w0.variance(),
+            w0.sample_variance(),
+            w0.std_dev(),
+            w0.z_score(123.0),
+        ] {
+            assert!(v.is_finite(), "n=0 statistic must be finite, got {v}");
+        }
+        // Documented sentinels at n=0.
+        assert_eq!(w0.variance(), 0.0);
+        assert_eq!(w0.sample_variance(), 0.0);
+        assert_eq!(w0.std_dev(), 0.0);
+        assert_eq!(w0.z_score(123.0), 0.0);
+
+        // n = 1: a single observation has no spread.
+        let mut w1 = WelfordStats::new();
+        w1.update(7.5);
+        assert_eq!(w1.count, 1);
+        for v in [
+            w1.mean,
+            w1.variance(),
+            w1.sample_variance(),
+            w1.std_dev(),
+            w1.z_score(7.5),
+            w1.z_score(999.0),
+        ] {
+            assert!(v.is_finite(), "n=1 statistic must be finite, got {v}");
+        }
+        assert_eq!(w1.variance(), 0.0);
+        assert_eq!(w1.sample_variance(), 0.0);
+        assert_eq!(w1.std_dev(), 0.0);
+        // z_score guards on near-zero sd → 0.0 even for an off-mean query.
+        assert_eq!(w1.z_score(999.0), 0.0);
     }
 
     #[test]
@@ -1055,6 +1324,7 @@ mod tests {
             n_subcarriers: 8,
             n_modes: 2,
             min_calibration_frames: 5,
+            min_calibration_duration_s: 0.0,
             baseline_expiry_s: 86_400.0,
         };
         let mut model = FieldModel::new(config).unwrap();
@@ -1248,6 +1518,7 @@ mod tests {
             n_subcarriers: 8,
             n_modes: 3,
             min_calibration_frames: 20,
+            min_calibration_duration_s: 0.0,
             baseline_expiry_s: 86_400.0,
         };
         let mut model = FieldModel::new(config).unwrap();
@@ -1310,6 +1581,7 @@ mod tests {
             n_subcarriers: 8,
             n_modes: 3,
             min_calibration_frames: 20,
+            min_calibration_duration_s: 0.0,
             baseline_expiry_s: 86_400.0,
         };
         let mut model = FieldModel::new(config).unwrap();
@@ -1358,6 +1630,7 @@ mod tests {
             n_subcarriers: 8,
             n_modes: 3,
             min_calibration_frames: 20,
+            min_calibration_duration_s: 0.0,
             baseline_expiry_s: 86_400.0,
         };
         let mut model = FieldModel::new(config).unwrap();
@@ -1387,6 +1660,48 @@ mod tests {
     }
 
     #[test]
+    fn snapshot_round_trip_preserves_aggregate_modes_without_raw_frames() {
+        let config = make_config(1, 4, 10);
+        let mut model = FieldModel::new(config).unwrap();
+        for i in 0..10 {
+            model
+                .feed_calibration(&[vec![1.0 + i as f64 * 0.01, 2.0, 3.0, 4.0]])
+                .unwrap();
+        }
+        model.finalize_calibration(1_000_000, 0xCA1).unwrap();
+
+        let snapshot = model.export_snapshot().unwrap();
+        let restored = FieldModel::from_snapshot(snapshot.clone(), 2_000_000).unwrap();
+
+        assert_eq!(restored.status(), CalibrationStatus::Fresh);
+        assert_eq!(restored.calibration_frame_count(), 0);
+        assert_eq!(restored.export_snapshot().unwrap(), snapshot);
+    }
+
+    #[test]
+    fn snapshot_restore_rejects_expired_and_malformed_images() {
+        let config = make_config(1, 4, 10);
+        let mut model = FieldModel::new(config).unwrap();
+        for _ in 0..10 {
+            model.feed_calibration(&[vec![1.0, 2.0, 3.0, 4.0]]).unwrap();
+        }
+        model.finalize_calibration(1_000_000, 0).unwrap();
+        let snapshot = model.export_snapshot().unwrap();
+
+        assert!(matches!(
+            FieldModel::from_snapshot(snapshot.clone(), 90_000_000_000),
+            Err(FieldModelError::BaselineExpired { .. })
+        ));
+
+        let mut malformed = snapshot;
+        malformed.modes.baseline[0].pop();
+        assert!(matches!(
+            FieldModel::from_snapshot(malformed, 2_000_000),
+            Err(FieldModelError::InvalidConfig(_))
+        ));
+    }
+
+    #[test]
     fn test_environmental_projection_removes_drift() {
         let config = make_config(1, 4, 10);
         let mut model = FieldModel::new(config).unwrap();
@@ -1413,5 +1728,72 @@ mod tests {
             perturbation.environmental_projections[0] > 0.0,
             "Environmental projection should be non-zero for drifting subcarrier"
         );
+    }
+
+    // -----------------------------------------------------------------
+    // Wall-clock calibration gate (#1756)
+    // -----------------------------------------------------------------
+
+    #[test]
+    fn test_default_frame_target_derives_from_duration() {
+        let cfg = FieldModelConfig::default();
+        assert_eq!(cfg.min_calibration_duration_s, CALIBRATION_DURATION_S);
+        assert_eq!(
+            cfg.min_calibration_frames,
+            (CALIBRATION_DURATION_S * ASSUMED_CALIBRATION_RATE_HZ) as usize,
+            "frame target must be the intended window at the assumed rate"
+        );
+    }
+
+    #[test]
+    fn test_finalize_requires_wall_clock_window() {
+        // Enough frames, but fed instantly: the fleet-fast scenario from #1756.
+        let mut config = make_config(1, 4, 5);
+        config.min_calibration_duration_s = 600.0;
+        let mut model = FieldModel::new(config).unwrap();
+        for _ in 0..10 {
+            model
+                .feed_calibration(&make_observations(1, 4, 1.0))
+                .unwrap();
+        }
+        assert!(model.calibration_frame_count() >= 5);
+        match model.finalize_calibration(1_000_000, 0) {
+            Err(FieldModelError::InsufficientCalibrationDuration { needed_s, got_s }) => {
+                assert!((needed_s - 600.0).abs() < 1e-9);
+                assert!(got_s < 1.0, "test feeds frames instantly, got {got_s}s");
+            }
+            other => panic!("expected InsufficientCalibrationDuration, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn test_duration_gate_disabled_with_zero() {
+        // min_calibration_duration_s = 0 keeps the legacy frame-only gate.
+        let mut model = FieldModel::new(make_config(1, 4, 5)).unwrap();
+        for _ in 0..5 {
+            model
+                .feed_calibration(&make_observations(1, 4, 1.0))
+                .unwrap();
+        }
+        assert!(model.finalize_calibration(1_000_000, 0).is_ok());
+    }
+
+    #[test]
+    fn test_calibration_clock_accessors() {
+        let mut model = FieldModel::new(make_config(1, 4, 5)).unwrap();
+        // No frames yet: the session clock has not started.
+        assert_eq!(model.calibration_elapsed_s(), 0.0);
+        assert_eq!(model.calibration_frames_per_second(), 0.0);
+
+        model
+            .feed_calibration(&make_observations(1, 4, 1.0))
+            .unwrap();
+        assert!(model.calibration_elapsed_s() >= 0.0);
+        assert!(model.calibration_frames_per_second() >= 0.0);
+
+        // Reset clears the session clock.
+        model.reset_calibration();
+        assert_eq!(model.calibration_elapsed_s(), 0.0);
+        assert_eq!(model.calibration_frames_per_second(), 0.0);
     }
 }

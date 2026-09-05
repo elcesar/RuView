@@ -26,20 +26,39 @@
 use std::sync::{Arc, Mutex};
 
 use homecore::HomeCore;
-use wasmtime::{Engine, Linker, Module, Store};
+use wasmtime::{Config, Engine, Linker, Module, Store, StoreLimits, StoreLimitsBuilder};
 
 use crate::error::PluginError;
 use crate::host_abi::{LogLevel, StateChangedEventJson, MAX_ABI_BUFFER_BYTES};
+use crate::manifest::PluginManifest;
+use crate::permissions::PermissionSet;
+use crate::verify::{verify_module, PluginPolicy};
+
+/// Hard ceiling for every module accepted by the runtime, including callers
+/// that bypass filesystem discovery.
+pub const MAX_WASM_MODULE_BYTES: usize = 16 * 1024 * 1024;
+const MAX_SUBSCRIPTIONS: usize = 4096;
+const MAX_LINEAR_MEMORY_BYTES: usize = 16 * 1024 * 1024;
+const FUEL_PER_CALL: u64 = 10_000_000;
 
 // ── Store data ─────────────────────────────────────────────────────────────
 
 /// Per-plugin state stored inside the Wasmtime [`Store`].
 ///
 /// Wasmtime's `Store<T>` exposes `T` to host functions via `caller.data()`.
-/// We store the `HomeCore` handle and a list of subscribed entity IDs here.
+/// We store the `HomeCore` handle, a list of subscribed entity IDs, and the
+/// plugin's write-permission set (ADR-162 P5 authority isolation).
 pub struct PluginStoreData {
     pub hc: HomeCore,
     pub subscriptions: Vec<String>,
+    /// Entity-write authority distilled from the manifest's
+    /// `homecore_permissions`. Consulted by `hc_state_set`. The
+    /// permission-free [`WasmtimeRuntime::load_wasm`] path installs an
+    /// all-allowing set for backward compatibility; the
+    /// [`WasmtimeRuntime::load_plugin`] path installs the manifest's
+    /// declared set.
+    pub permissions: PermissionSet,
+    limits: StoreLimits,
 }
 
 // ── WasmtimeRuntime ────────────────────────────────────────────────────────
@@ -55,18 +74,62 @@ pub struct WasmtimeRuntime {
 impl WasmtimeRuntime {
     /// Create a new runtime with default Cranelift config.
     pub fn new() -> Result<Self, PluginError> {
-        let engine = Engine::default();
+        let mut config = Config::new();
+        config.consume_fuel(true);
+        let engine = Engine::new(&config)
+            .map_err(|e| PluginError::RuntimeError(format!("Wasmtime engine: {e}")))?;
         Ok(Self { engine })
     }
 
-    /// Compile and instantiate a WASM plugin from raw bytes.
+    /// Compile and instantiate a WASM plugin from raw bytes, **without**
+    /// signature verification or permission gating (the plugin gets
+    /// all-write authority).
     ///
-    /// Returns a [`WasmPlugin`] handle that owns the `Store` and the
-    /// `Instance`. The handle can be used to call into the WASM module.
+    /// Retained for the legacy/test path and first-party trusted modules.
+    /// Production plugin loading should go through [`Self::load_plugin`],
+    /// which verifies the module (ADR-162 P4) and scopes its write
+    /// authority to the manifest (P5).
     pub fn load_wasm(
         &self,
         wasm_bytes: &[u8],
         hc: HomeCore,
+    ) -> Result<WasmPlugin, PluginError> {
+        check_module_size(wasm_bytes)?;
+        self.instantiate(wasm_bytes, hc, PermissionSet::allow_all())
+    }
+
+    /// Verify and instantiate a WASM plugin from its manifest + raw bytes.
+    ///
+    /// This is the secure load path (ADR-162):
+    ///   1. **P4** — [`verify_module`] checks the SHA-256 module hash and
+    ///      Ed25519 signature against the manifest under `policy`. A
+    ///      tampered module, bad/forged signature, untrusted publisher, or
+    ///      (under the secure default) an unsigned module is rejected
+    ///      **before** any guest code runs.
+    ///   2. **P5** — the plugin's `homecore_permissions` are distilled into
+    ///      a [`PermissionSet`] installed in the store, so `hc_state_set`
+    ///      can only write entities the plugin declared.
+    pub fn load_plugin(
+        &self,
+        manifest: &PluginManifest,
+        wasm_bytes: &[u8],
+        hc: HomeCore,
+        policy: &PluginPolicy,
+    ) -> Result<WasmPlugin, PluginError> {
+        check_module_size(wasm_bytes)?;
+        // P4: verify before instantiation.
+        verify_module(manifest, wasm_bytes, policy)?;
+        // P5: scope write authority to the manifest's declared permissions.
+        let permissions = PermissionSet::from_manifest(manifest);
+        self.instantiate(wasm_bytes, hc, permissions)
+    }
+
+    /// Shared compile + instantiate, installing the given permission set.
+    fn instantiate(
+        &self,
+        wasm_bytes: &[u8],
+        hc: HomeCore,
+        permissions: PermissionSet,
     ) -> Result<WasmPlugin, PluginError> {
         let module = Module::new(&self.engine, wasm_bytes)
             .map_err(|e| PluginError::RuntimeError(format!("WASM compile: {e}")))?;
@@ -77,8 +140,18 @@ impl WasmtimeRuntime {
         let store_data = PluginStoreData {
             hc,
             subscriptions: Vec::new(),
+            permissions,
+            limits: StoreLimitsBuilder::new()
+                .memory_size(MAX_LINEAR_MEMORY_BYTES)
+                .instances(1)
+                .memories(1)
+                .build(),
         };
         let mut store = Store::new(&self.engine, store_data);
+        store.limiter(|data| &mut data.limits);
+        store
+            .set_fuel(FUEL_PER_CALL)
+            .map_err(|e| PluginError::RuntimeError(format!("set instantiation fuel: {e}")))?;
 
         let instance = linker
             .instantiate(&mut store, &module)
@@ -128,6 +201,12 @@ fn register_hc_state_get(
              out_ptr: i32,
              out_cap: i32|
              -> i32 {
+                if out_ptr < 0
+                    || out_cap < 0
+                    || out_cap as usize > MAX_ABI_BUFFER_BYTES
+                {
+                    return -1;
+                }
                 // Phase 1: read the entity key from guest memory.
                 let key: String = {
                     let mem = match caller.get_export("memory") {
@@ -165,7 +244,9 @@ fn register_hc_state_get(
                     Some(wasmtime::Extern::Memory(m)) => m,
                     _ => return -1,
                 };
-                let end = out_ptr as usize + json_bytes.len();
+                let Some(end) = (out_ptr as usize).checked_add(json_bytes.len()) else {
+                    return -1;
+                };
                 let out = match mem.data_mut(&mut caller).get_mut(out_ptr as usize..end) {
                     Some(s) => s,
                     None => return -1,
@@ -183,7 +264,9 @@ fn register_hc_state_get(
 /// Sets the state for the entity whose UTF-8 ID is at `[eid_ptr,eid_ptr+eid_len)`.
 /// The new state string is at `[state_ptr,state_ptr+state_len)`.
 /// The attributes JSON is at `[attrs_ptr,attrs_ptr+attrs_len)`.
-/// Returns 0 on success, negative on error.
+/// Returns 0 on success, negative on error: -1 (bad memory/args), -2
+/// (invalid entity id), -3 (permission denied — entity not in the
+/// plugin's declared `homecore_permissions`, ADR-162 P5).
 fn register_hc_state_set(
     linker: &mut Linker<PluginStoreData>,
 ) -> Result<(), PluginError> {
@@ -224,6 +307,20 @@ fn register_hc_state_set(
                     Ok(id) => id,
                     Err(_) => return -2,
                 };
+
+                // ── P5 authority isolation (ADR-162) ──────────────────────
+                // Reject a write to an entity the plugin did not declare in
+                // `homecore_permissions`. Return a typed error code to the
+                // guest (-3); do NOT panic the host.
+                if !caller.data().permissions.may_write(entity_id.as_str()) {
+                    eprintln!(
+                        "[PLUGIN WARN] denied hc_state_set on `{}` — not in plugin's declared \
+                         homecore_permissions (P5 authority isolation)",
+                        entity_id.as_str()
+                    );
+                    return -3;
+                }
+
                 let attrs: serde_json::Value =
                     serde_json::from_str(&attrs_str).unwrap_or(serde_json::json!({}));
 
@@ -264,7 +361,15 @@ fn register_hc_state_subscribe(
                         None => return -1,
                     }
                 };
-                caller.data_mut().subscriptions.push(eid);
+                if homecore::EntityId::parse(&eid).is_err() {
+                    return -1;
+                }
+                if caller.data().subscriptions.len() >= MAX_SUBSCRIPTIONS {
+                    return -2;
+                }
+                if !caller.data().subscriptions.contains(&eid) {
+                    caller.data_mut().subscriptions.push(eid);
+                }
                 0
             },
         )
@@ -307,6 +412,7 @@ fn register_hc_log(
 ///
 /// The `Arc<Mutex<_>>` allows the handle to be `Clone` + `Send` while
 /// maintaining exclusive access for calls into the WASM module.
+#[derive(Clone)]
 pub struct WasmPlugin {
     pub inner: Arc<Mutex<(Store<PluginStoreData>, wasmtime::Instance)>>,
 }
@@ -327,6 +433,9 @@ impl WasmPlugin {
             .lock()
             .map_err(|e| PluginError::RuntimeError(format!("lock: {e}")))?;
         let (store, instance) = &mut *guard;
+        store
+            .set_fuel(FUEL_PER_CALL)
+            .map_err(|e| PluginError::RuntimeError(format!("set call fuel: {e}")))?;
         call_export_str(store, instance, "plugin_setup", config_entry_json)
     }
 
@@ -342,7 +451,32 @@ impl WasmPlugin {
             .lock()
             .map_err(|e| PluginError::RuntimeError(format!("lock: {e}")))?;
         let (store, instance) = &mut *guard;
+        store
+            .set_fuel(FUEL_PER_CALL)
+            .map_err(|e| PluginError::RuntimeError(format!("set call fuel: {e}")))?;
         call_export_str(store, instance, "plugin_handle_state_changed", &json)
+    }
+
+    /// Call an optional `plugin_teardown() -> i32` export. Older modules that
+    /// do not export teardown remain compatible; new modules can release
+    /// guest-owned resources deterministically.
+    pub fn call_teardown(&self) -> Result<i32, PluginError> {
+        let mut guard = self
+            .inner
+            .lock()
+            .map_err(|e| PluginError::RuntimeError(format!("lock: {e}")))?;
+        let (store, instance) = &mut *guard;
+        store
+            .set_fuel(FUEL_PER_CALL)
+            .map_err(|e| PluginError::RuntimeError(format!("set call fuel: {e}")))?;
+        let Some(func) = instance.get_func(&mut *store, "plugin_teardown") else {
+            return Ok(0);
+        };
+        let func = func.typed::<(), i32>(&*store).map_err(|e| {
+            PluginError::RuntimeError(format!("plugin_teardown has invalid signature: {e}"))
+        })?;
+        func.call(&mut *store, ())
+            .map_err(|e| PluginError::RuntimeError(format!("call plugin_teardown: {e}")))
     }
 }
 
@@ -350,12 +484,13 @@ impl WasmPlugin {
 
 /// Read a UTF-8 string from guest linear memory.
 fn read_str(mem: &[u8], ptr: i32, len: i32) -> Option<&str> {
-    if len < 0 || len as usize > MAX_ABI_BUFFER_BYTES {
+    if ptr < 0 || len < 0 || len as usize > MAX_ABI_BUFFER_BYTES {
         return None;
     }
     let ptr = ptr as usize;
     let len = len as usize;
-    let slice = mem.get(ptr..ptr + len)?;
+    let end = ptr.checked_add(len)?;
+    let slice = mem.get(ptr..end)?;
     std::str::from_utf8(slice).ok()
 }
 
@@ -368,6 +503,13 @@ fn call_export_str(
     payload: &str,
 ) -> Result<i32, PluginError> {
     let payload_bytes = payload.as_bytes().to_vec(); // owned copy avoids reborrow issues
+    if payload_bytes.len() > MAX_ABI_BUFFER_BYTES {
+        return Err(PluginError::ResourceLimit(format!(
+            "ABI payload is {} bytes; maximum is {}",
+            payload_bytes.len(),
+            MAX_ABI_BUFFER_BYTES
+        )));
+    }
     let payload_len = payload_bytes.len() as i32;
 
     // 1. Allocate guest buffer.
@@ -377,15 +519,23 @@ fn call_export_str(
     let ptr = alloc
         .call(&mut *store, payload_len)
         .map_err(|e| PluginError::RuntimeError(format!("call alloc: {e}")))?;
+    if ptr < 0 {
+        return Err(PluginError::RuntimeError(
+            "guest alloc returned a negative pointer".into(),
+        ));
+    }
 
     // 2. Write payload into guest memory.
     {
         let mem = instance
             .get_memory(&mut *store, "memory")
             .ok_or_else(|| PluginError::RuntimeError("no memory export".into()))?;
+        let end = (ptr as usize)
+            .checked_add(payload_bytes.len())
+            .ok_or_else(|| PluginError::RuntimeError("guest allocation overflow".into()))?;
         let guest_slice = mem
             .data_mut(&mut *store)
-            .get_mut(ptr as usize..ptr as usize + payload_bytes.len())
+            .get_mut(ptr as usize..end)
             .ok_or_else(|| PluginError::RuntimeError("guest memory OOB".into()))?;
         guest_slice.copy_from_slice(&payload_bytes);
     }
@@ -407,6 +557,17 @@ fn call_export_str(
         .map_err(|e| PluginError::RuntimeError(format!("call dealloc: {e}")))?;
 
     Ok(result)
+}
+
+fn check_module_size(wasm_bytes: &[u8]) -> Result<(), PluginError> {
+    if wasm_bytes.len() > MAX_WASM_MODULE_BYTES {
+        return Err(PluginError::ResourceLimit(format!(
+            "WASM module is {} bytes; maximum is {}",
+            wasm_bytes.len(),
+            MAX_WASM_MODULE_BYTES
+        )));
+    }
+    Ok(())
 }
 
 // ── Unit tests (using inline WAT) ──────────────────────────────────────────

@@ -106,7 +106,7 @@ impl Trigger {
     pub fn matches_sync(&self, ctx: &TriggerContext) -> bool {
         match self {
             Trigger::State { entity_id, from, to } => {
-                let eid_match = ctx.entity_id.as_ref().map_or(false, |e| e == entity_id);
+                let eid_match = ctx.entity_id.as_ref() == Some(entity_id);
                 if !eid_match {
                     return false;
                 }
@@ -125,7 +125,7 @@ impl Trigger {
                 true
             }
             Trigger::NumericState { entity_id, above, below } => {
-                let eid_match = ctx.entity_id.as_ref().map_or(false, |e| e == entity_id);
+                let eid_match = ctx.entity_id.as_ref() == Some(entity_id);
                 if !eid_match {
                     return false;
                 }
@@ -150,7 +150,12 @@ impl Trigger {
                 true
             }
             Trigger::Time { .. } => {
-                // Time triggers are evaluated by the engine's timer task, not here.
+                // Time triggers are wall-clock based and have no state-change
+                // context to match here. They are evaluated by the engine's
+                // 1 Hz timer task (`AutomationEngine::start_timer`, HC-WS-04 /
+                // ADR-161), which compares the trigger's `at` against the local
+                // wall-clock second. `matches_sync` therefore returns false for
+                // `Time` on the state-change path by design.
                 false
             }
             Trigger::Event { event_type } => {
